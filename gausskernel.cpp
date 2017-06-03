@@ -6,8 +6,6 @@ GaussKernel::GaussKernel(QWidget *parent): QWidget(parent), ui(new Ui::GaussKern
     ui->setupUi(this);
     setWindowTitle("Kernel");
 
-    //ui->tableGauss->
-
     /* Initialize, Minimum */
     ui->tableGauss->setRowCount(3);
     ui->tableGauss->setColumnCount(3);
@@ -16,7 +14,6 @@ GaussKernel::GaussKernel(QWidget *parent): QWidget(parent), ui(new Ui::GaussKern
         ui->tableGauss->setRowHeight(i, 40);
         ui->tableGauss->setColumnWidth(i, 40);
     }
-
 }
 
 GaussKernel::~GaussKernel()
@@ -63,6 +60,24 @@ void GaussKernel::on_leSigma_textChanged(const QString &arg1)
         }
     }
 }
+
+void GaussKernel::on_pbCalculate_clicked()
+{
+    qDebug() << "GaussKernel::on_pbCalculate_clicked()";
+}
+
+void GaussKernel::setImage(const QImage &value)
+{
+    image = value;
+}
+
+void GaussKernel::gaussianFilter()
+{
+
+}
+
+
+
 
 
 

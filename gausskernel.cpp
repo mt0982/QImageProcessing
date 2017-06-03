@@ -59,7 +59,7 @@ void GaussKernel::on_leSigma_textChanged(const QString &arg1)
             float value = exp(-(pow(x - radius,2) + pow(y - radius,2)) / (2 * pow(sigma,2)));
             item = new QTableWidgetItem;
             ui->tableGauss->setItem(x,y,item);
-            item->setText(QString::number(value));
+            item->setText(QString::number(value, 'g', 2));
         }
     }
 }

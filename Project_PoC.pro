@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    gausskernel.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    gausskernel.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    gausskernel.ui

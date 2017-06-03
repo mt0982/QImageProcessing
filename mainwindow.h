@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QImage>
 #include <QPixmap>
+#include <QDebug>
 
 namespace Ui {
 class MainWindow;

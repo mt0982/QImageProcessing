@@ -21,6 +21,7 @@ public:
 
 private slots:
     void on_actionGauss_triggered();
+    void setImage(QImage image);
 
 private:
     Ui::MainWindow *ui;
@@ -29,3 +30,20 @@ private:
 };
 
 #endif // MAINWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

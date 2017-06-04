@@ -24,13 +24,25 @@ private slots:
     void on_pbCalculate_clicked();
 
 signals:
-//    void signalCalculated(QString);
+    void sendImage(QImage);
 
 private:
     Ui::GaussKernel *ui;
 
     QImage image;
+    float mask_sum;
     void gaussianFilter();
+
 };
 
 #endif // GAUSSKERNEL_H
+
+
+
+
+
+
+
+
+
+

@@ -57,9 +57,10 @@ void GaussKernel::on_leSigma_textChanged(const QString &arg1)
         for (int y = 0; y < ui->tableGauss->colorCount(); ++y) {
 
             float value = exp(-(pow(x - radius,2) + pow(y - radius,2)) / (2 * pow(sigma,2)));
+            int value_int = value * 100;
             item = new QTableWidgetItem;
             ui->tableGauss->setItem(x,y,item);
-            item->setText(QString::number(value, 'g', 2));
+            item->setText(QString::number(value_int));
         }
     }
 }
@@ -87,7 +88,8 @@ void GaussKernel::gaussianFilter()
     mask_sum = 0;
     for (int i = 0; i < ui->tableGauss->rowCount(); ++i) {
         for (int j = 0; j < ui->tableGauss->columnCount(); ++j) {
-            float value = ui->tableGauss->item(i, j)->text().toFloat();
+            //float value = ui->tableGauss->item(i, j)->text().toFloat();
+            int value = ui->tableGauss->item(i, j)->text().toInt();
             mask_sum += value;
         }
     }
@@ -105,7 +107,8 @@ void GaussKernel::gaussianFilter()
 
                 for (int j = -radius; j <= radius; ++j) {
 
-                    float value = ui->tableGauss->item(i + radius, j + radius)->text().toFloat();
+                    //float value = ui->tableGauss->item(i + radius, j + radius)->text().toFloat();
+                    int value = ui->tableGauss->item(i + radius, j + radius)->text().toInt();
                     sum_r += value * qRed(ptr_original[x + j]);
                     sum_g += value * qGreen(ptr_original[x + j]);
                     sum_b += value * qBlue(ptr_original[x + j]);
@@ -132,12 +135,13 @@ void GaussKernel::gaussianFilterFast()
 
     /* 1D */
     int total = radius * 2 + 1;
-    float array[total];
+    /*float*/ int array[total];
 
     /* Init 1D Aray */
     mask_sum = 0;
     for (int i = 0; i < total; ++i) {
-        array[i] = ui->tableGauss->item(total / 2, i)->text().toFloat();
+        //array[i] = ui->tableGauss->item(total / 2, i)->text().toFloat();
+        array[i] = ui->tableGauss->item(total / 2, i)->text().toInt();
         mask_sum += array[i];
     }
 

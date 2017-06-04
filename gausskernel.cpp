@@ -219,8 +219,7 @@ void GaussKernel::unsharpFilter()
     /* Calculate Mask */
     QImage mask(image.width(), image.height(), QImage::Format_RGB32);
     QImage output(image.width(), image.height(), QImage::Format_RGB32);
-    int alfa = ui->labelAlfa->text().toInt();
-    qDebug() << alfa;
+    int alfa = ui->leAlfa->text().toInt();
 
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_mask = (QRgb*)mask.scanLine(y);

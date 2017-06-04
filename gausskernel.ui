@@ -45,6 +45,12 @@
      <property name="text">
       <string>Gauss</string>
      </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
     </widget>
    </item>
    <item row="0" column="1">
@@ -69,7 +75,7 @@
     </widget>
    </item>
    <item row="4" column="2">
-    <widget class="QLineEdit" name="labelAlfa"/>
+    <widget class="QLineEdit" name="leAlfa"/>
    </item>
    <item row="5" column="2">
     <widget class="QPushButton" name="pbUnsharp">
@@ -86,6 +92,16 @@
     </widget>
    </item>
   </layout>
+  <zorder>sbRadius</zorder>
+  <zorder>tableGauss</zorder>
+  <zorder>pbCalculate</zorder>
+  <zorder>label</zorder>
+  <zorder>label_2</zorder>
+  <zorder>line</zorder>
+  <zorder>leAlfa</zorder>
+  <zorder>pbUnsharp</zorder>
+  <zorder>label_3</zorder>
+  <zorder>leSigma</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -9,6 +9,7 @@ GaussKernel::GaussKernel(QWidget *parent): QWidget(parent), ui(new Ui::GaussKern
     /* Initialize, Minimum */
     ui->tableGauss->setRowCount(3);
     ui->tableGauss->setColumnCount(3);
+    ui->tableGauss->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     for (int i = 0; i < 3; ++i) {
         ui->tableGauss->setRowHeight(i, 40);
@@ -66,7 +67,8 @@ void GaussKernel::on_leSigma_textChanged(const QString &arg1)
 void GaussKernel::on_pbCalculate_clicked()
 {
     qDebug() << "GaussKernel::on_pbCalculate_clicked()";
-    gaussianFilter();
+    //gaussianFilter();
+    gaussianFilterFast();
 }
 
 void GaussKernel::setImage(const QImage &value)
@@ -118,6 +120,90 @@ void GaussKernel::gaussianFilter()
         }
     }
 
+    emit sendImage(output);
+}
+
+void GaussKernel::gaussianFilterFast()
+{
+    /* Parameters */
+    int radius = ui->sbRadius->value();
+    int sum_r, sum_b, sum_g;
+    QImage output(image.width(), image.height(), QImage::Format_RGB32);
+
+    /* 1D */
+    int total = radius * 2 + 1;
+    float array[total];
+
+    /* Init 1D Aray */
+    mask_sum = 0;
+    for (int i = 0; i < total; ++i) {
+        array[i] = ui->tableGauss->item(total / 2, i)->text().toFloat();
+        mask_sum += array[i];
+    }
+
+    /* Horizontal */
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_original = (QRgb*)image.scanLine(y);
+        QRgb *ptr_copy = (QRgb*)output.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+            sum_r = sum_g = sum_b = 0;
+
+            for (int i = 0; i < total; ++i) {
+
+                sum_r += qRed(ptr_original[abs(x+i-radius)]) * array[i];
+                sum_g += qGreen(ptr_original[abs(x+i-radius)]) * array[i];
+                sum_b += qBlue(ptr_original[abs(x+i-radius)]) * array[i];
+            }
+
+            sum_r /= mask_sum;
+            sum_g /= mask_sum;
+            sum_b /= mask_sum;
+
+            sum_r = (sum_r > 255) ? 255 : ((sum_r < 0) ? 0 : sum_r);
+            sum_g = (sum_g > 255) ? 255 : ((sum_g < 0) ? 0 : sum_g);
+            sum_b = (sum_b > 255) ? 255 : ((sum_b < 0) ? 0 : sum_b);
+
+            ptr_copy[x] = qRgb(sum_r, sum_g, sum_b);
+        }
+    }
+
+    QTransform transform;
+    transform.rotate(90);
+    output = output.transformed(transform);
+    QImage second_output = output;
+
+    /* Vertical, Second Pass */
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_original = (QRgb*)second_output.scanLine(y);
+        QRgb *ptr_copy = (QRgb*)output.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+            sum_r = sum_g = sum_b = 0;
+
+            for (int i = 0; i < total; ++i) {
+
+                sum_r += qRed(ptr_original[abs(x+i-radius)]) * array[i];
+                sum_g += qGreen(ptr_original[abs(x+i-radius)]) * array[i];
+                sum_b += qBlue(ptr_original[abs(x+i-radius)]) * array[i];
+            }
+
+            sum_r /= mask_sum;
+            sum_g /= mask_sum;
+            sum_b /= mask_sum;
+
+            sum_r = (sum_r > 255) ? 255 : ((sum_r < 0) ? 0 : sum_r);
+            sum_g = (sum_g > 255) ? 255 : ((sum_g < 0) ? 0 : sum_g);
+            sum_b = (sum_b > 255) ? 255 : ((sum_b < 0) ? 0 : sum_b);
+
+            ptr_copy[x] = qRgb(sum_r, sum_g, sum_b);
+        }
+    }
+
+    transform.rotate(180);
+    output = output.transformed(transform);
+
+    /* Emit Output */
     emit sendImage(output);
 }
 

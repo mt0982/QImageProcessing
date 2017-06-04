@@ -31,7 +31,9 @@ private:
 
     QImage image;
     float mask_sum;
+
     void gaussianFilter();
+    void gaussianFilterFast();
 
 };
 

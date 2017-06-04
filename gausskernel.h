@@ -23,6 +23,8 @@ private slots:
     void on_leSigma_textChanged(const QString &arg1);
     void on_pbCalculate_clicked();
 
+    void on_pbUnsharp_clicked();
+
 signals:
     void sendImage(QImage);
 
@@ -30,11 +32,13 @@ private:
     Ui::GaussKernel *ui;
 
     QImage image;
+    QImage gaussImage;
+
     float mask_sum;
 
     void gaussianFilter();
     void gaussianFilterFast();
-
+    void unsharpFilter();
 };
 
 #endif // GAUSSKERNEL_H

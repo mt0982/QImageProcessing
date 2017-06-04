@@ -206,10 +206,70 @@ void GaussKernel::gaussianFilterFast()
 
     transform.rotate(180);
     output = output.transformed(transform);
+    gaussImage = output;
 
     /* Emit Output */
     emit sendImage(output);
 }
+
+void GaussKernel::unsharpFilter()
+{
+    gaussianFilterFast();
+
+    /* Calculate Mask */
+    QImage mask(image.width(), image.height(), QImage::Format_RGB32);
+    QImage output(image.width(), image.height(), QImage::Format_RGB32);
+    int alfa = ui->labelAlfa->text().toInt();
+    qDebug() << alfa;
+
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_mask = (QRgb*)mask.scanLine(y);
+        QRgb *ptr_gauss = (QRgb*)gaussImage.scanLine(y);
+        QRgb *ptr_original = (QRgb*)image.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            int r = qRed(ptr_original[x]) - qRed(ptr_gauss[x]);
+            int g = qGreen(ptr_original[x]) - qGreen(ptr_gauss[x]);
+            int b = qBlue(ptr_original[x]) - qBlue(ptr_gauss[x]);
+
+            r = (r < 0) ? 0 : r;
+            g = (g < 0) ? 0 : g;
+            b = (b < 0) ? 0 : b;
+
+            ptr_mask[x] = qRgb(r, g, b);
+        }
+    }
+
+    /* Unsharp = Original + α * mask */
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_mask = (QRgb*)mask.scanLine(y);
+        QRgb *ptr_output = (QRgb*)output.scanLine(y);
+        QRgb *ptr_original = (QRgb*)image.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            int r = qRed(ptr_original[x]) + alfa * qRed(ptr_mask[x]);
+            int g = qGreen(ptr_original[x]) + alfa * qGreen(ptr_mask[x]);
+            int b = qBlue(ptr_original[x]) + alfa * qBlue(ptr_mask[x]);
+
+            r = (r > 255) ? 255 : r;
+            g = (g > 255) ? 255 : g;
+            b = (b > 255) ? 255 : b;
+
+            ptr_output[x] = qRgb(r, g, b);
+        }
+    }
+
+    /* Emit Output */
+    emit sendImage(output);
+}
+
+void GaussKernel::on_pbUnsharp_clicked()
+{
+    unsharpFilter();
+}
+
 
 
 

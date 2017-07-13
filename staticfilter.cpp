@@ -29,12 +29,14 @@ void StaticFilter::filter(int nr)
         for (int x = 0; x < image.width(); ++x) {
 
             for (int i = -radius; i <= radius; ++i) {
-                QRgb *ptr_image = (QRgb*)image.scanLine(abs(y+i));
+                int index = ((y+i) > image.height()) ? y-i : abs(y+i);
+                QRgb *ptr_image = (QRgb*)image.scanLine(index);
 
                 for (int j = -radius; j <= radius; ++j) {
-                    int red = qRed(ptr_image[abs(x+j)]);
-                    int green = qGreen(ptr_image[abs(x+j)]);
-                    int blue = qBlue(ptr_image[abs(x+j)]);
+                    index = ((x+j) > image.width()) ? x-j : abs(x+j);
+                    int red = qRed(ptr_image[index]);
+                    int green = qGreen(ptr_image[index]);
+                    int blue = qBlue(ptr_image[index]);
                     color.add(red, green, blue);
                 }
             }

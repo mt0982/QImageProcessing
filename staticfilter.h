@@ -62,11 +62,15 @@ signals:
 private slots:
     void on_pbMinimum_clicked();
     void on_pbMaximum_clicked();
+    void on_pushButton_3_clicked();
+    void on_pbOpening_clicked();
+    void on_pbClosing_clicked();
 
 private:
     Ui::StaticFilter *ui;
 
     QImage image;
+    QImage output;
 };
 
 #endif // STATICFILTER_H

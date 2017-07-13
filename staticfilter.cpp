@@ -20,7 +20,7 @@ void StaticFilter::filter(int nr)
 {
     /* Parameters */
     int radius = ui->sbRadius->value();
-    QImage output(image.width(), image.height(), QImage::Format_RGB32);
+    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
     Color color;
 
     for (int y = 0; y < image.height(); ++y) {
@@ -72,6 +72,39 @@ void StaticFilter::on_pbMaximum_clicked()
 {
     filter(1);
 }
+
+void StaticFilter::on_pushButton_3_clicked()
+{
+    filter(2);
+}
+
+void StaticFilter::on_pbOpening_clicked()
+{
+    QImage tmp = image;
+    filter(1);
+    image = output;
+    filter(2);
+    image = tmp;
+}
+
+void StaticFilter::on_pbClosing_clicked()
+{
+    QImage tmp = image;
+    filter(0);
+    image = output;
+    filter(1);
+    image = tmp;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

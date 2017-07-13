@@ -6,13 +6,13 @@
 #include <QPixmap>
 #include <QDebug>
 #include "gausskernel.h"
+#include "staticfilter.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -22,11 +22,13 @@ public:
 private slots:
     void on_actionGauss_triggered();
     void setImage(QImage image);
+    void on_actionStatic_Min_Max_Median_triggered();
 
 private:
     Ui::MainWindow *ui;
 
     GaussKernel *gaussKernel;
+    StaticFilter *staticFilter;
 };
 
 #endif // MAINWINDOW_H

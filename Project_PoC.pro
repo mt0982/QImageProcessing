@@ -14,10 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    gausskernel.cpp
+    gausskernel.cpp \
+    staticfilter.cpp
 
 HEADERS  += mainwindow.h \
-    gausskernel.h
+    gausskernel.h \
+    staticfilter.h
 
 FORMS    += mainwindow.ui \
-    gausskernel.ui
+    gausskernel.ui \
+    staticfilter.ui

@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>578</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFilters">
@@ -44,12 +44,18 @@
      <string>Filters</string>
     </property>
     <addaction name="actionGauss"/>
+    <addaction name="actionStatic_Min_Max_Median"/>
    </widget>
    <addaction name="menuFilters"/>
   </widget>
   <action name="actionGauss">
    <property name="text">
-    <string>Gauss</string>
+    <string>Gauss / Unsharp</string>
+   </property>
+  </action>
+  <action name="actionStatic_Min_Max_Median">
+   <property name="text">
+    <string>Static (Min, Max, Median)</string>
    </property>
   </action>
  </widget>

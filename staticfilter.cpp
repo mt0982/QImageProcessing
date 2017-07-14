@@ -96,6 +96,82 @@ void StaticFilter::on_pbClosing_clicked()
     image = tmp;
 }
 
+void StaticFilter::on_pbFastMedian_clicked()
+{
+    int radius = ui->sbRadius->value();
+    int mid = pow(radius * 2 + 1, 2) / 2;
+    int mred[256], mgreen[256], mblue[256];
+    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_output = (QRgb*)output.scanLine(y);
+
+        memset(mred, 0, sizeof(int) * 255);
+        memset(mgreen, 0, sizeof(int) * 255);
+        memset(mblue, 0, sizeof(int) * 255);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            /* If first column then fill array */
+            if (!x) {
+                for (int i = -radius; i <= radius; ++i) {
+                    int index = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    QRgb *ptr_image = (QRgb*)image.scanLine(index);
+
+                    for (int j = -radius; j <= radius; ++j) {
+                        index = ((x + j) > image.width()) ? x - j : abs(x + j);
+                        int red = qRed(ptr_image[index]);
+                        int green = qGreen(ptr_image[index]);
+                        int blue = qBlue(ptr_image[index]);
+
+                        mred[red]++;
+                        mgreen[green]++;
+                        mblue[blue]++;
+                    }
+                }
+            }
+            else {
+                /* Add New */
+                QRgb *ptr_off;
+                int offradius = radius + 1;
+                for (int i = -radius; i <= radius; ++i) {
+                    int column = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    int row = ((x + radius) > image.width()) ? x - radius : abs(x + radius);
+                    ptr_off = (QRgb*)image.scanLine(column);
+                    mred[qRed(ptr_off[row])]++;
+                    mgreen[qGreen(ptr_off[row])]++;
+                    mblue[qBlue(ptr_off[row])]++;
+                }
+                /* Remove Old */
+                for (int i = -radius; i <= radius; ++i) {
+                    int column = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    int row = ((x + offradius) > image.width()) ? x - offradius : abs(x - offradius);
+                    ptr_off = (QRgb*)image.scanLine(column);
+                    mred[qRed(ptr_off[row])]--;
+                    mgreen[qGreen(ptr_off[row])]--;
+                    mblue[qBlue(ptr_off[row])]--;
+                }
+            }
+
+            /* Lambda Expression - Sort */
+            auto msort = [mid](int *arr) {
+                int counter = 0, value = -1;
+                while (counter <= mid) {
+                    value++;
+                    counter += arr[value];
+                }
+                return value;
+            };
+
+            ptr_output[x] = qRgb(msort(mred), msort(mgreen), msort(mblue));
+        }
+    }
+
+    /* Send Output */
+    sendImage(output);
+}
+
+
 
 
 

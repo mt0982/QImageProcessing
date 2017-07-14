@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QVector3D>
 #include <QVector>
+#include <QDebug>
 
 class Color {
 private:
@@ -65,6 +66,7 @@ private slots:
     void on_pushButton_3_clicked();
     void on_pbOpening_clicked();
     void on_pbClosing_clicked();
+    void on_pbFastMedian_clicked();
 
 private:
     Ui::StaticFilter *ui;

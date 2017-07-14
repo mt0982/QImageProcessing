@@ -14,19 +14,53 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="5" column="0" colspan="2">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0" colspan="2">
     <widget class="QPushButton" name="pbMaximum">
      <property name="text">
       <string>Maximum</string>
      </property>
     </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QPushButton" name="pbOpening">
+     <property name="text">
+      <string>Opening</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QPushButton" name="pbMinimum">
+     <property name="text">
+      <string>Minimum</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QPushButton" name="pbClosing">
+     <property name="text">
+      <string>Closing</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="8">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="6" column="0" colspan="2">
     <widget class="QPushButton" name="pushButton_3">
@@ -45,17 +79,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QPushButton" name="pbMinimum">
-     <property name="text">
-      <string>Minimum</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" rowspan="7">
-    <widget class="Line" name="line_2">
+   <item row="5" column="0" colspan="2">
+    <widget class="Line" name="line">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -72,30 +99,10 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QPushButton" name="pbOpening">
+   <item row="7" column="0" colspan="2">
+    <widget class="QPushButton" name="pbFastMedian">
      <property name="text">
-      <string>Opening</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QPushButton" name="pbClosing">
-     <property name="text">
-      <string>Closing</string>
+      <string>Fast Median</string>
      </property>
     </widget>
    </item>

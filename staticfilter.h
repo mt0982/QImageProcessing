@@ -39,7 +39,7 @@ public:
 
     QVector3D mmin() { return QVector3D(red[0], green[0], blue[0]); }
     QVector3D mmax() { return QVector3D(red[last], green[last], blue[last]); }
-    QVector3D mmid() { return QVector3D(red[mid], green[mid], blue[mid]); }
+    QVector3D mmed() { return QVector3D(red[mid], green[mid], blue[mid]); }
 };
 
 namespace Ui {
@@ -67,6 +67,7 @@ private slots:
     void on_pbOpening_clicked();
     void on_pbClosing_clicked();
     void on_pbFastMedian_clicked();
+    void on_pbAdaptiveMedian_clicked();
 
 private:
     Ui::StaticFilter *ui;

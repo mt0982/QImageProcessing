@@ -4,6 +4,8 @@
 StaticFilter::StaticFilter(QWidget *parent) : QWidget(parent), ui(new Ui::StaticFilter)
 {
     ui->setupUi(this);
+    ui->sbRadius->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    ui->sbRadiusMax->setButtonSymbols(QAbstractSpinBox::PlusMinus);
 }
 
 StaticFilter::~StaticFilter()
@@ -174,7 +176,7 @@ void StaticFilter::on_pbFastMedian_clicked()
 void StaticFilter::on_pbAdaptiveMedian_clicked()
 {
     int radius_min = ui->sbRadius->value();
-    int radius_max = 3, med;
+    int radius_max = ui->sbRadiusMax->value(), med;
     bool ended;
     int mred[256], mgreen[256], mblue[256];
     output = QImage(image.width(), image.height(), QImage::Format_RGB32);
@@ -183,18 +185,18 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
         QRgb *ptr_input = (QRgb*)image.scanLine(y);
         QRgb *ptr_output = (QRgb*)output.scanLine(y);
 
-        memset(mred, 0, sizeof(int) * 255);
-        memset(mgreen, 0, sizeof(int) * 255);
-        memset(mblue, 0, sizeof(int) * 255);
+        memset(mred, 0, sizeof(int) * 256);
+        memset(mgreen, 0, sizeof(int) * 256);
+        memset(mblue, 0, sizeof(int) * 256);
 
         for (int x = 0; x < image.width(); ++x) {
 
-            /* Reset Radius Value */
-            radius_min = ui->sbRadius->value();
-            ended = false;
+//            /* Reset Radius Value */
+//            radius_min = ui->sbRadius->value();
+//            ended = false;
 
-            /* Adaptive Median */
-            while (radius_min < radius_max) {
+//            /* Adaptive Median */
+//            while (radius_min <= radius_max) {
                 med = pow(radius_min * 2 + 1, 2) / 2;
 
                 /* If first column then fill array */
@@ -261,31 +263,31 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
                     }
                 };
 
-                /* Adaptive Median Conditions */
-                if ((lambda_min(mred) < lambda_med(mred)) && (lambda_med(mred) < lambda_med(mred))) {// min < med < max
-                    if ((lambda_min(mred) < qRed(ptr_input[x])) && (qRed(ptr_input[x]) < lambda_med(mred))) {//min < f(x,y) < max
-                        ptr_output[x] = ptr_input[x];
-                        ended = true;
-                        break;
-                    } else {
-                        ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mred), lambda_med(mred));
-                        ended = true;
-                        break;
-                    }
-                } else {
-                    radius_min++;
-                }
-            }
+//                /* Adaptive Median Conditions */
+//                if ((lambda_min(mred) < lambda_med(mred)) && (lambda_med(mred) < lambda_max(mred))) {// min < med < max
+//                    if ((lambda_min(mred) < qRed(ptr_input[x])) && (qRed(ptr_input[x]) < lambda_max(mred))) {//min < f(x,y) < max
+//                        ptr_output[x] = ptr_input[x];
+//                        ended = true;
+//                        break;
+//                    } else {
+//                        ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mgreen), lambda_med(mblue));
+//                        ended = true;
+//                        break;
+//                    }
+//                } else {
+//                    radius_min++;
+//                }
+//            }
 
-            auto lambda_med = [med](int *arr) {
-                int counter = 0, value = -1;
-                while (counter <= med) {
-                    value++;
-                    counter += arr[value];
-                } return value;
-            };
+//            auto lambda_med = [med](int *arr) {
+//                int counter = 0, value = -1;
+//                while (counter <= med) {
+//                    value++;
+//                    counter += arr[value];
+//                } return value;
+//            };
 
-            if (!ended) ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mred), lambda_med(mred));
+           /* if (!ended)*/ ptr_output[x] = qRgb(lambda_max(mred), lambda_max(mgreen), lambda_max(mblue));
         }
     }
 

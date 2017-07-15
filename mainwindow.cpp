@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(gaussKernel, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
-    QImage image("/home/asus/Obrazy/lena.png");
+    QImage image("/home/asus/Obrazy/lenaNoise.png");
     //QImage output = QImage(image.width(), image.height(), QImage::Format_RGB32);
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
 

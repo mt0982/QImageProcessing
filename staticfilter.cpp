@@ -191,12 +191,12 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
 
         for (int x = 0; x < image.width(); ++x) {
 
-//            /* Reset Radius Value */
-//            radius_min = ui->sbRadius->value();
-//            ended = false;
+            /* Reset Radius Value */
+            radius_min = ui->sbRadius->value();
+            ended = false;
 
-//            /* Adaptive Median */
-//            while (radius_min <= radius_max) {
+            /* Adaptive Median */
+            while (radius_min <= radius_max) {
                 med = pow(radius_min * 2 + 1, 2) / 2;
 
                 /* If first column then fill array */
@@ -263,31 +263,31 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
                     }
                 };
 
-//                /* Adaptive Median Conditions */
-//                if ((lambda_min(mred) < lambda_med(mred)) && (lambda_med(mred) < lambda_max(mred))) {// min < med < max
-//                    if ((lambda_min(mred) < qRed(ptr_input[x])) && (qRed(ptr_input[x]) < lambda_max(mred))) {//min < f(x,y) < max
-//                        ptr_output[x] = ptr_input[x];
-//                        ended = true;
-//                        break;
-//                    } else {
-//                        ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mgreen), lambda_med(mblue));
-//                        ended = true;
-//                        break;
-//                    }
-//                } else {
-//                    radius_min++;
-//                }
-//            }
+                /* Adaptive Median Conditions */
+                if ((lambda_min(mred) < lambda_med(mred)) && (lambda_med(mred) < lambda_max(mred))) {// min < med < max
+                    if ((lambda_min(mred) < qRed(ptr_input[x])) && (qRed(ptr_input[x]) < lambda_max(mred))) {//min < f(x,y) < max
+                        ptr_output[x] = ptr_input[x];
+                        ended = true;
+                        break;
+                    } else {
+                        ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mred), lambda_med(mred));
+                        ended = true;
+                        break;
+                    }
+                } else {
+                    radius_min++;
+                }
+            }
 
-//            auto lambda_med = [med](int *arr) {
-//                int counter = 0, value = -1;
-//                while (counter <= med) {
-//                    value++;
-//                    counter += arr[value];
-//                } return value;
-//            };
+            auto lambda_med = [med](int *arr) {
+                int counter = 0, value = -1;
+                while (counter <= med) {
+                    value++;
+                    counter += arr[value];
+                } return value;
+            };
 
-           /* if (!ended)*/ ptr_output[x] = qRgb(lambda_max(mred), lambda_max(mgreen), lambda_max(mblue));
+            if (!ended) ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mred), lambda_med(mred));
         }
     }
 

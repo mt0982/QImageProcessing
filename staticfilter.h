@@ -69,6 +69,8 @@ private slots:
     void on_pbFastMedian_clicked();
     void on_pbAdaptiveMedian_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::StaticFilter *ui;
 

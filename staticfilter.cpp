@@ -4,8 +4,6 @@
 StaticFilter::StaticFilter(QWidget *parent) : QWidget(parent), ui(new Ui::StaticFilter)
 {
     ui->setupUi(this);
-    ui->sbRadius->setButtonSymbols(QAbstractSpinBox::PlusMinus);
-    ui->sbRadiusMax->setButtonSymbols(QAbstractSpinBox::PlusMinus);
 }
 
 StaticFilter::~StaticFilter()
@@ -288,6 +286,53 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
             };
 
             if (!ended) ptr_output[x] = qRgb(lambda_med(mred), lambda_med(mred), lambda_med(mred));
+        }
+    }
+
+    /* Send Output */
+    sendImage(output);
+}
+
+void StaticFilter::on_pushButton_clicked()
+{
+    int radius = ui->sbRadius->value();
+    double sigma_distance = ui->sbDistance->value();
+    double sigma_intensity = ui->sbIntensity->value();
+    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    double distance, intensity_r, intensity_g, intensity_b;
+    double norm_r, norm_g, norm_b, mred, mgreen, mblue;
+
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_input = (QRgb*)image.scanLine(y);
+        QRgb *ptr_output = (QRgb*)output.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            norm_r = norm_g = norm_b = mred = mgreen = mblue = 0;
+
+            for (int i = -radius; i <= radius; ++i) {
+                int index = ((y + i) > image.height()) ? y - i : abs(y + i);
+                QRgb *ptr_kernel = (QRgb*)image.scanLine(index);
+
+                for (int j = -radius; j <= radius; ++j) {
+                    index = ((x + j) > image.width()) ? x - j : abs(x + j);
+                    distance = exp((-0.5 * (pow(x - (x + j), 2)) + pow(y - (y + i), 2)) / pow(sigma_distance, 2));
+                    intensity_r = exp((-0.5 * pow(qRed(ptr_kernel[index]) - qRed(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    intensity_g = exp((-0.5 * pow(qGreen(ptr_kernel[index]) - qGreen(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    intensity_b = exp((-0.5 * pow(qBlue(ptr_kernel[index]) - qBlue(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+
+                    norm_r += (distance * intensity_r);
+                    norm_g += (distance * intensity_g);
+                    norm_b += (distance * intensity_b);
+
+                    mred += (qRed(ptr_kernel[index]) * distance * intensity_r);
+                    mgreen += (qGreen(ptr_kernel[index]) * distance * intensity_g);
+                    mblue += (qBlue(ptr_kernel[index]) * distance * intensity_b);
+                }
+            }
+
+            ptr_output[x] = qRgb(mred / norm_r, mgreen / norm_g, mblue / norm_b);
         }
     }
 

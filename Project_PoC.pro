@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     gausskernel.cpp \
-    staticfilter.cpp
+    staticfilter.cpp \
+    cannyfilter.cpp
 
 HEADERS  += mainwindow.h \
     gausskernel.h \
-    staticfilter.h
+    staticfilter.h \
+    cannyfilter.h
 
 FORMS    += mainwindow.ui \
     gausskernel.ui \

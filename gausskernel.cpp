@@ -1,7 +1,7 @@
 #include "gausskernel.h"
 #include "ui_gausskernel.h"
 
-GaussKernel::GaussKernel(QWidget *parent): QWidget(parent), ui(new Ui::GaussKernel)
+GaussUnsharpFilter::GaussUnsharpFilter(QWidget *parent): QWidget(parent), ui(new Ui::GaussKernel)
 {
     ui->setupUi(this);
     setWindowTitle("Kernel");
@@ -19,12 +19,12 @@ GaussKernel::GaussKernel(QWidget *parent): QWidget(parent), ui(new Ui::GaussKern
     mask_sum = 0;
 }
 
-GaussKernel::~GaussKernel()
+GaussUnsharpFilter::~GaussUnsharpFilter()
 {
     delete ui;
 }
 
-void GaussKernel::on_sbRadius_valueChanged(int arg1)
+void GaussUnsharpFilter::on_sbRadius_valueChanged(int arg1)
 {
     /* Clear */
     ui->leSigma->clear();
@@ -41,7 +41,7 @@ void GaussKernel::on_sbRadius_valueChanged(int arg1)
     }
 }
 
-void GaussKernel::on_leSigma_textChanged(const QString &arg1)
+void GaussUnsharpFilter::on_leSigma_textChanged(const QString &arg1)
 {
     /* Clear */
     ui->tableGauss->clear();
@@ -65,19 +65,19 @@ void GaussKernel::on_leSigma_textChanged(const QString &arg1)
     }
 }
 
-void GaussKernel::on_pbCalculate_clicked()
+void GaussUnsharpFilter::on_pbCalculate_clicked()
 {
     qDebug() << "GaussKernel::on_pbCalculate_clicked()";
     //gaussianFilter();
     gaussianFilterFast();
 }
 
-void GaussKernel::setImage(const QImage &value)
+void GaussUnsharpFilter::setImage(const QImage &value)
 {
     image = value;
 }
 
-void GaussKernel::gaussianFilter()
+void GaussUnsharpFilter::gaussianFilter()
 {
     /* Parameters */
     int radius = ui->sbRadius->value();
@@ -126,7 +126,7 @@ void GaussKernel::gaussianFilter()
     emit sendImage(output);
 }
 
-void GaussKernel::gaussianFilterFast()
+void GaussUnsharpFilter::gaussianFilterFast()
 {
     /* Parameters */
     int radius = ui->sbRadius->value();
@@ -212,7 +212,14 @@ void GaussKernel::gaussianFilterFast()
     emit sendImage(output);
 }
 
-void GaussKernel::unsharpFilter()
+void GaussUnsharpFilter::gaussianFilterFastCanny(int radius, int sigma)
+{
+    ui->sbRadius->setValue(radius);
+    on_leSigma_textChanged(QString::number(sigma));
+    gaussianFilterFast();
+}
+
+void GaussUnsharpFilter::unsharpFilter()
 {
     gaussianFilterFast();
 
@@ -264,7 +271,7 @@ void GaussKernel::unsharpFilter()
     emit sendImage(output);
 }
 
-void GaussKernel::on_pbUnsharp_clicked()
+void GaussUnsharpFilter::on_pbUnsharp_clicked()
 {
     unsharpFilter();
 }

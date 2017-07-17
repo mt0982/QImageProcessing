@@ -8,21 +8,21 @@ namespace Ui {
 class GaussKernel;
 }
 
-class GaussKernel : public QWidget
-{
+class GaussUnsharpFilter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit GaussKernel(QWidget *parent = 0);
-    ~GaussKernel();
+    explicit GaussUnsharpFilter(QWidget *parent = 0);
+    ~GaussUnsharpFilter();
 
     void setImage(const QImage &value);
+    void gaussianFilterFast();
+    void gaussianFilterFastCanny(int radius, int sigma);
 
 private slots:
     void on_sbRadius_valueChanged(int arg1);
     void on_leSigma_textChanged(const QString &arg1);
     void on_pbCalculate_clicked();
-
     void on_pbUnsharp_clicked();
 
 signals:
@@ -37,7 +37,6 @@ private:
     float mask_sum;
 
     void gaussianFilter();
-    void gaussianFilterFast();
     void unsharpFilter();
 };
 

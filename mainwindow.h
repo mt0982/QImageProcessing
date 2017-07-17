@@ -7,6 +7,7 @@
 #include <QDebug>
 #include "gausskernel.h"
 #include "staticfilter.h"
+#include "cannyfilter.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,11 +25,14 @@ private slots:
     void setImage(QImage image);
     void on_actionStatic_Min_Max_Median_triggered();
 
+    void on_actionCanny_triggered();
+
 private:
     Ui::MainWindow *ui;
 
-    GaussKernel *gaussKernel;
+    GaussUnsharpFilter *gaussUnsharpFilter;
     StaticFilter *staticFilter;
+    CannyFilter *cannyFilter;
 };
 
 #endif // MAINWINDOW_H

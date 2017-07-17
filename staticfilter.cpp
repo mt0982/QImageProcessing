@@ -312,23 +312,23 @@ void StaticFilter::on_pushButton_clicked()
             norm_r = norm_g = norm_b = mred = mgreen = mblue = 0;
 
             for (int i = -radius; i <= radius; ++i) {
-                int index = ((y + i) > image.height()) ? y - i : abs(y + i);
-                QRgb *ptr_kernel = (QRgb*)image.scanLine(index);
+                int yindex = ((y + i) > image.height()) ? y - i : abs(y + i);
+                QRgb *ptr_kernel = (QRgb*)image.scanLine(yindex);
 
                 for (int j = -radius; j <= radius; ++j) {
-                    index = ((x + j) > image.width()) ? x - j : abs(x + j);
-                    distance = exp((-0.5 * (pow(x - (x + j), 2)) + pow(y - (y + i), 2)) / pow(sigma_distance, 2));
-                    intensity_r = exp((-0.5 * pow(qRed(ptr_kernel[index]) - qRed(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
-                    intensity_g = exp((-0.5 * pow(qGreen(ptr_kernel[index]) - qGreen(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
-                    intensity_b = exp((-0.5 * pow(qBlue(ptr_kernel[index]) - qBlue(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    int xindex = ((x + j) > image.width()) ? x - j : abs(x + j);
+                    distance = exp((-0.5 * sqrt((pow(x - (xindex), 2) + pow(y - (yindex), 2))) / pow(sigma_distance, 2)));
+                    intensity_r = exp((-0.5 * pow(qRed(ptr_kernel[xindex]) - qRed(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    intensity_g = exp((-0.5 * pow(qGreen(ptr_kernel[xindex]) - qGreen(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    intensity_b = exp((-0.5 * pow(qBlue(ptr_kernel[xindex]) - qBlue(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
 
                     norm_r += (distance * intensity_r);
                     norm_g += (distance * intensity_g);
                     norm_b += (distance * intensity_b);
 
-                    mred += (qRed(ptr_kernel[index]) * distance * intensity_r);
-                    mgreen += (qGreen(ptr_kernel[index]) * distance * intensity_g);
-                    mblue += (qBlue(ptr_kernel[index]) * distance * intensity_b);
+                    mred += (qRed(ptr_kernel[xindex]) * distance * intensity_r);
+                    mgreen += (qGreen(ptr_kernel[xindex]) * distance * intensity_g);
+                    mblue += (qBlue(ptr_kernel[xindex]) * distance * intensity_b);
                 }
             }
 

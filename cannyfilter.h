@@ -19,6 +19,7 @@ private:
     QImage image;
     QImage output;
     GaussUnsharpFilter *gaussUnsharpFilter;
+    QVector<int> mSobel;
 
 public slots:
     void overloadImage(QImage value);
@@ -28,3 +29,21 @@ signals:
 };
 
 #endif // CANNYFILTER_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(cannyFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
-    QImage image("/home/asus/Obrazy/rachel.png");
+    QImage image("/home/asus/Obrazy/lena.png");
     //QImage output = QImage(image.width(), image.height(), QImage::Format_RGB32);
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
 

@@ -5,17 +5,11 @@ CannyFilter::CannyFilter(QWidget *parent) : QWidget(parent)
     gaussUnsharpFilter = new GaussUnsharpFilter;
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(overloadImage(QImage)));
 
-//    mSobel = {1,  2,  0, -2,  -1,
-//              4,  8,  0, -8,  -4,
-//              6,  12, 0, -12, -6,
-//              4,  8,  0, -8,  -4,
-//              1,  2,  0, -2,  -1};
-
-    xSobel = {-1, -2, -1,
+    ySobel = {1,  2,  1,
               0,  0,  0,
-              1,  2,  1};
+             -1,- 2, -1};
 
-    ySobel = {-1,  0,  1,
+    xSobel = {-1,  0,  1,
               -2,  0,  2,
               -1,  0,  1};
 }
@@ -84,8 +78,8 @@ void CannyFilter::processImage()
             sum_gh = (sum_gh > 255) ? 255 : ((sum_gh < 0) ? 0 : sum_gh);
             sum_bh = (sum_bh > 255) ? 255 : ((sum_bh < 0) ? 0 : sum_bh);
 
-            ptr_vertical[x] = qRgb(sum_rv, sum_gv, sum_bv);
-            ptr_horizontal[x] = qRgb(sum_rh, sum_gh, sum_bh);
+            ptr_horizontal[x] = qRgb(sum_rv, sum_gv, sum_bv);
+            ptr_vertical[x] = qRgb(sum_rh, sum_gh, sum_bh);
 
             /* 3. Gradient, Direction */
             int magnitude = sqrt(pow(qGray(ptr_vertical[x]), 2) + pow(qGray(ptr_horizontal[x]), 2));
@@ -141,31 +135,45 @@ void CannyFilter::processImage()
     }
 
     /* 5. Thresholding with Hysterysis */
-    int tmin = 15, tmax = 100, sum;
+    int tmin = 15, tmax = 100;
+    QQueue<QPoint> mqueue;
+
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_suppression = (QRgb*)output_suppression.scanLine(y);
         QRgb *ptr_canny = (QRgb*)output_canny.scanLine(y);
 
         for (int x = 0; x < image.width(); ++x) {
 
-            if (qGray(ptr_suppression[x]) > tmax) ptr_canny[x] = qRgb(255, 255, 255);
-            else if (qGray(ptr_suppression[x]) < tmin) ptr_canny[x] = qRgb(0, 0, 0);
+            if (qGray(ptr_suppression[x]) > tmax && qGray(ptr_canny[x]) == 0) ptr_canny[x] = qRgb(255, 255, 255);
+            else if (qGray(ptr_suppression[x]) < tmin && qGray(ptr_canny[x]) != 0) ptr_canny[x] = qRgb(0, 0, 0);
             else {
+                //ptr_canny[x] = qRgb(255, 255, 255);
+                mqueue.push_back(QPoint(x,y));
 
-                sum = 0;
-                for (int i = -radius; i <= radius; ++i) {
-                    int index = ((y + i) > image.height()) ? y - i : abs(y + i);
-                    QRgb *ptr_neighbor = (QRgb*)output_suppression.scanLine(index);
+                while (!mqueue.isEmpty()) {
 
-                    for (int j = -radius; j <= radius; ++j) {
-                        index = ((x + j) > image.width()) ? x - j : abs(x + j);
-                        sum += qGray(ptr_neighbor[index]);
+                    QPoint index = mqueue.front();
+                    mqueue.pop_front();
+
+                    /* For Each Neighbor */
+                    for (int i = -radius; i <= radius; ++i) {
+                        int yindex = ((index.y() + i) > image.height()) ? index.y() - i : abs(index.y() + i);
+                        QRgb *ptr_neighbor = (QRgb*)output_suppression.scanLine(yindex);
+
+                        for (int j = -radius; j <= radius; ++j) {
+                            int xindex = ((index.x() + j) > image.width()) ? index.x() - j : abs(index.x() + j);
+
+                            if (i != 0 && j != 0) {
+                                if (qGray(ptr_neighbor[xindex]) > tmin && qGray(ptr_canny[xindex]) == 0) {
+                                    ptr_canny[xindex] = qRgb(255, 255, 255);
+                                    mqueue.push_back(QPoint(xindex, yindex));
+                                }
+                            }
+                        }
                     }
                 }
-
-                sum /= (pow(radius * 2 + 1, 2));
-                ptr_canny[x] = (sum > tmax) ? qRgb(255, 255, 255) : qRgb(0, 0, 0);
             }
+
         }
     }
 
@@ -177,8 +185,8 @@ void CannyFilter::processImage()
 //    windowB->setPixmap(QPixmap::fromImage(output_vertical));
 //    windowB->show();
 
-    sendImage(output_suppression);
-    //sendImage(output_canny);
+    //sendImage(output_suppression);
+    sendImage(output_canny);
 }
 
 void CannyFilter::overloadImage(QImage value)

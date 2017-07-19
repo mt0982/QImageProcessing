@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QtMath>
+#include <QQueue>
 #include <gausskernel.h>
 
 class CannyFilter : public QWidget {

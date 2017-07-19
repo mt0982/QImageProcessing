@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QDebug>
+#include <QLabel>
 #include <gausskernel.h>
 
 class CannyFilter : public QWidget {
@@ -19,7 +20,7 @@ private:
     QImage image;
     QImage output;
     GaussUnsharpFilter *gaussUnsharpFilter;
-    QVector<int> mSobel;
+    QVector<int> xSobel, ySobel;
 
 public slots:
     void overloadImage(QImage value);

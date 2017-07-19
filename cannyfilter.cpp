@@ -41,7 +41,6 @@ void CannyFilter::processImage()
     /* Calculating Gradients */
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_gauss = (QRgb*)image.scanLine(y);
-        QRgb *ptr_output = (QRgb*)output.scanLine(y);
         QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
         QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
         QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
@@ -94,8 +93,20 @@ void CannyFilter::processImage()
 
             ptr_magnitude[x] = qRgb(magnitude, magnitude, magnitude);
             ptr_direction[x] = qRgb(direction, direction, direction);
+        }
+    }
 
-            /* 4. Nonmaximum Supression */
+    /* 4. Nonmaximum Supression */
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_output = (QRgb*)output.scanLine(y);
+        QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
+        QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
+        QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            float direction = (fmod(atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x])) + M_PI, M_PI) / M_PI) * 8;
+
             if (direction <= 1 || direction > 7) {      //0 deg
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x - 1]) &&
                         qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x + 1])) {
@@ -128,6 +139,9 @@ void CannyFilter::processImage()
             }
         }
     }
+
+//    /* 5. Thresholding with Hysterysis */
+//    int tmin = 20, tmax = 100;
 
 //    QLabel *windowA = new QLabel;
 //    windowA->setPixmap(QPixmap::fromImage(output_horizontal));

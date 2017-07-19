@@ -87,7 +87,6 @@ void CannyFilter::processImage()
 
             ptr_vertical[x] = qRgb(sum_rv, sum_gv, sum_bv);
             ptr_horizontal[x] = qRgb(sum_rh, sum_gh, sum_bh);
-            ptr_output[x] = qRgb(sum_rv, sum_gv, sum_bv);
 
             /* 3. Gradient, Direction */
             int magnitude = sqrt(pow(qGray(ptr_vertical[x]), 2) + pow(qGray(ptr_horizontal[x]), 2));
@@ -98,28 +97,29 @@ void CannyFilter::processImage()
 
             /* 4. Nonmaximum Supression */
             if (direction <= 1 || direction > 7) {      //0 deg
-                if (ptr_magnitude[x] > ptr_magnitude[x - 1] && ptr_magnitude[x] > ptr_magnitude[x + 1]) {
+                if (qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x - 1]) &&
+                        qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x + 1])) {
                     ptr_output[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 1 && direction <= 3) { //45 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
-                if (ptr_magnitude[x] > ptr_down[x - 1] && ptr_magnitude[x] > ptr_up[x + 1]) {
+                if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x - 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x + 1])) {
                     ptr_output[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 3 && direction <= 5) { //90 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
-                if (ptr_magnitude[x] > ptr_down[x] && ptr_magnitude[x] > ptr_up[x]) {
+                if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x])) {
                     ptr_output[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 5 && direction <= 7) { //135 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
-                if (ptr_magnitude[x] > ptr_down[x + 1] && ptr_magnitude[x] > ptr_up[x - 1]) {
+                if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x + 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x - 1])) {
                     ptr_output[x] = ptr_magnitude[x];
                 }
             }

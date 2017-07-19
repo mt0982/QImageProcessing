@@ -29,18 +29,18 @@ void CannyFilter::setImage(QImage value)
 void CannyFilter::processImage()
 {
     int radius = 1, sum_rv, sum_gv, sum_bv, sum_rh, sum_gh, sum_bh, mask_index;
-    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    QImage output_suppression = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_horizontal = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_vertical = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_magnitude = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_direction = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    QImage output_canny = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     /* 1. Preprocessing - Gauss */
     gaussUnsharpFilter->gaussianFilterFastCanny(2, 1);
 
-    /* Calculating Gradients */
+    /* 2. Calculating Gradients */
     for (int y = 0; y < image.height(); ++y) {
-        QRgb *ptr_gauss = (QRgb*)image.scanLine(y);
         QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
         QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
         QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
@@ -98,7 +98,7 @@ void CannyFilter::processImage()
 
     /* 4. Nonmaximum Supression */
     for (int y = 0; y < image.height(); ++y) {
-        QRgb *ptr_output = (QRgb*)output.scanLine(y);
+        QRgb *ptr_suppression = (QRgb*)output_suppression.scanLine(y);
         QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
         QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
         QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
@@ -110,38 +110,64 @@ void CannyFilter::processImage()
             if (direction <= 1 || direction > 7) {      //0 deg
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x - 1]) &&
                         qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x + 1])) {
-                    ptr_output[x] = ptr_magnitude[x];
+                    ptr_suppression[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 1 && direction <= 3) { //45 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x - 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x + 1])) {
-                    ptr_output[x] = ptr_magnitude[x];
+                    ptr_suppression[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 3 && direction <= 5) { //90 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x])) {
-                    ptr_output[x] = ptr_magnitude[x];
+                    ptr_suppression[x] = ptr_magnitude[x];
                 }
             }
             else if (direction > 5 && direction <= 7) { //135 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x + 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x - 1])) {
-                    ptr_output[x] = ptr_magnitude[x];
+                    ptr_suppression[x] = ptr_magnitude[x];
                 }
             }
             else {
-                ptr_output[x] = qRgb(0, 0, 0);
+                ptr_suppression[x] = qRgb(0, 0, 0);
             }
         }
     }
 
-//    /* 5. Thresholding with Hysterysis */
-//    int tmin = 20, tmax = 100;
+    /* 5. Thresholding with Hysterysis */
+    int tmin = 15, tmax = 100, sum;
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_suppression = (QRgb*)output_suppression.scanLine(y);
+        QRgb *ptr_canny = (QRgb*)output_canny.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            if (qGray(ptr_suppression[x]) > tmax) ptr_canny[x] = qRgb(255, 255, 255);
+            else if (qGray(ptr_suppression[x]) < tmin) ptr_canny[x] = qRgb(0, 0, 0);
+            else {
+
+                sum = 0;
+                for (int i = -radius; i <= radius; ++i) {
+                    int index = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    QRgb *ptr_neighbor = (QRgb*)output_suppression.scanLine(index);
+
+                    for (int j = -radius; j <= radius; ++j) {
+                        index = ((x + j) > image.width()) ? x - j : abs(x + j);
+                        sum += qGray(ptr_neighbor[index]);
+                    }
+                }
+
+                sum /= (pow(radius * 2 + 1, 2));
+                ptr_canny[x] = (sum > tmax) ? qRgb(255, 255, 255) : qRgb(0, 0, 0);
+            }
+        }
+    }
 
 //    QLabel *windowA = new QLabel;
 //    windowA->setPixmap(QPixmap::fromImage(output_horizontal));
@@ -151,7 +177,8 @@ void CannyFilter::processImage()
 //    windowB->setPixmap(QPixmap::fromImage(output_vertical));
 //    windowB->show();
 
-    sendImage(output);
+    sendImage(output_suppression);
+    //sendImage(output_canny);
 }
 
 void CannyFilter::overloadImage(QImage value)

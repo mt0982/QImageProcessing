@@ -19,7 +19,6 @@ public:
 
 private:
     QImage image;
-    QImage output;
     GaussUnsharpFilter *gaussUnsharpFilter;
     QVector<int> xSobel, ySobel;
 

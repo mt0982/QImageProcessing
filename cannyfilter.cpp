@@ -33,11 +33,12 @@ void CannyFilter::processImage()
     QImage output_horizontal = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_vertical = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
-    /* Preprocessing - Gauss */
+    /* 1. Preprocessing - Gauss */
     gaussUnsharpFilter->gaussianFilterFastCanny(2, 1);
 
     /* Calculating Gradients */
     for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_gauss = (QRgb*)image.scanLine(y);
         QRgb *ptr_output = (QRgb*)output.scanLine(y);
         QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
         QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
@@ -57,12 +58,12 @@ void CannyFilter::processImage()
                     int green = qGreen(ptr_image[xindex]);
                     int blue = qBlue(ptr_image[xindex]);
 
-                    /* Horizontal - fx */
+                    /* 2. Horizontal - fx */
                     sum_rh += (red * xSobel[mask_index]);
                     sum_gh += (green * xSobel[mask_index]);
                     sum_bh += (blue * xSobel[mask_index]);
 
-                    /* Vertical - fy */
+                    /* 2. Vertical - fy */
                     sum_rv += (red * ySobel[mask_index]);
                     sum_gv += (green * ySobel[mask_index]);
                     sum_bv += (blue * ySobel[mask_index]);
@@ -71,9 +72,6 @@ void CannyFilter::processImage()
 
                 }
             }
-
-            int magnitude = sqrt(pow(x, 2) + (pow(y, 2)));
-            float direction = (x != 0 && y != 0) ? atan(y / x) : 0;
 
             sum_rv = (sum_rv > 255) ? 255 : ((sum_rv < 0) ? 0 : sum_rv);
             sum_gv = (sum_gv > 255) ? 255 : ((sum_gv < 0) ? 0 : sum_gv);
@@ -86,18 +84,26 @@ void CannyFilter::processImage()
             ptr_vertical[x] = qRgb(sum_rv, sum_gv, sum_bv);
             ptr_horizontal[x] = qRgb(sum_rh, sum_gh, sum_bh);
             ptr_output[x] = qRgb(sum_rv, sum_gv, sum_bv);
+
+            /* 3. Gradient, Direction */
+            int magnitude = sqrt(pow(qGray(ptr_vertical[x]), 2) + pow(qGray(ptr_horizontal[x]), 2));
+            float direction = atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x]));
+            ptr_output[x] = qRgb(magnitude, magnitude, magnitude);
+
+            /* 4. Nonmaximum Supression */
+            //float p1 = (ptr_gauss[x])
         }
     }
 
-    QLabel *windowA = new QLabel;
-    windowA->setPixmap(QPixmap::fromImage(output_horizontal));
-    windowA->show();
+//    QLabel *windowA = new QLabel;
+//    windowA->setPixmap(QPixmap::fromImage(output_horizontal));
+//    windowA->show();
 
-    QLabel *windowB = new QLabel;
-    windowB->setPixmap(QPixmap::fromImage(output_vertical));
-    windowB->show();
+//    QLabel *windowB = new QLabel;
+//    windowB->setPixmap(QPixmap::fromImage(output_vertical));
+//    windowB->show();
 
-    sendImage(/*output*/image);
+    sendImage(output);
 }
 
 void CannyFilter::overloadImage(QImage value)

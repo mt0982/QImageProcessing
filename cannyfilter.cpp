@@ -86,7 +86,7 @@ void CannyFilter::processImage()
             float direction = (fmod(atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x])) + M_PI, M_PI) / M_PI) * 8;
 
             ptr_magnitude[x] = qRgb(magnitude, magnitude, magnitude);
-            ptr_direction[x] = qRgb(direction, direction, direction);
+            //ptr_direction[x] = qRgb(direction, direction, direction);
         }
     }
 
@@ -96,36 +96,41 @@ void CannyFilter::processImage()
         QRgb *ptr_horizontal = (QRgb*)output_horizontal.scanLine(y);
         QRgb *ptr_vertical = (QRgb*)output_vertical.scanLine(y);
         QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
+        QRgb *ptr_direction = (QRgb*)output_direction.scanLine(y);
 
         for (int x = 0; x < image.width(); ++x) {
 
-            float direction = (fmod(atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x])) + M_PI, M_PI) / M_PI) * 8;
+            float direction = atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x])) * 180 / M_PI;
 
-            if (direction <= 1 || direction > 7) {      //0 deg
+            if (direction <= 45 || direction > 315) {      //0 deg
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x - 1]) &&
                         qGray(ptr_magnitude[x]) > qGray(ptr_magnitude[x + 1])) {
                     ptr_suppression[x] = ptr_magnitude[x];
+                    ptr_direction[x] = qRgb(0,0,0);
                 }
             }
-            else if (direction > 1 && direction <= 3) { //45 deg
+            else if (direction > 45 && direction <= 135) { //45 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x - 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x + 1])) {
                     ptr_suppression[x] = ptr_magnitude[x];
+                    ptr_direction[x] = qRgb(45, 45, 45);
                 }
             }
-            else if (direction > 3 && direction <= 5) { //90 deg
+            else if (direction > 135 && direction <= 225) { //90 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x])) {
                     ptr_suppression[x] = ptr_magnitude[x];
+                    ptr_direction[x] = qRgb(90, 90, 90);
                 }
             }
-            else if (direction > 5 && direction <= 7) { //135 deg
+            else if (direction > 225 && direction <= 315) { //135 deg
                 QRgb *ptr_down = (QRgb*)output_magnitude.scanLine(y - 1);
                 QRgb *ptr_up = (QRgb*)output_magnitude.scanLine(y + 1);
                 if (qGray(ptr_magnitude[x]) > qGray(ptr_down[x + 1]) && qGray(ptr_magnitude[x]) > qGray(ptr_up[x - 1])) {
                     ptr_suppression[x] = ptr_magnitude[x];
+                    ptr_direction[x] = qRgb(135, 135, 135);
                 }
             }
             else {
@@ -186,7 +191,7 @@ void CannyFilter::processImage()
 //    windowB->show();
 
     //sendImage(output_suppression);
-    sendImage(output_canny);
+    sendImage(output_direction);
 }
 
 void CannyFilter::overloadImage(QImage value)

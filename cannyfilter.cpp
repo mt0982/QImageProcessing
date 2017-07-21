@@ -150,19 +150,128 @@ void CannyFilter::processImage()
         for (int y = 0; y < image.height(); ++y) {
             QRgb *ptr_suppression = (QRgb*)output_suppression.scanLine(y);
             QRgb *ptr_canny = (QRgb*)output_canny.scanLine(y);
+            QRgb *ptr_magnitude = (QRgb*)output_magnitude.scanLine(y);
+            QRgb *ptr_direction = (QRgb*)output_direction.scanLine(y);
 
             for (int x = 0; x < image.width(); ++x) {
+                QRgb *ptr_magDown = (QRgb*)output_magnitude.scanLine(y - 1);
+                QRgb *ptr_magUp = (QRgb*)output_magnitude.scanLine(y - 1);
+                QRgb *ptr_supDown = (QRgb*)output_suppression.scanLine(y - 1);
+                QRgb *ptr_supUp = (QRgb*)output_suppression.scanLine(y - 1);
+                QRgb *ptr_dirDown = (QRgb*)output_suppression.scanLine(y - 1);
+                QRgb *ptr_dirUp = (QRgb*)output_suppression.scanLine(y - 1);
+                QRgb *ptr_magDown2 = (QRgb*)output_magnitude.scanLine(y - 2);
+                QRgb *ptr_magUp2 = (QRgb*)output_magnitude.scanLine(y - 2);
 
                 if (qGray(ptr_suppression[x]) == 255) {
 
-//                    ptr_suppression[x] = qRgb(64, 64, 64);
-//                    float direction = atan2(qGray(ptr_horizontal[x]), qGray(ptr_vertical[x])) * 180 / M_PI;
+                    ptr_suppression[x] = qRgb(64, 64, 64);
+                    float direction = qGray(ptr_direction[x]);
 
-//                    if (direction > 112.5 && direction <= 157.5) {
-//                        QRgb *ptr_mag = (QRgb*)output_magnitude.scanLine(y - 1);
-//                        QRgb *ptr_sup = (QRgb*)output_suppression.scanLine(y - 1);
-//                        //if (qGray(ptr_down[x - 1]) > tmin && qGray(ptr_suppression[x - 1]) != 64)
-//                    }
+                    if (direction > 112.5 && direction <= 157.5) {
+
+                        /* Left-Bottom */
+                        if (qGray(ptr_magDown[x - 1]) >= tmin &&
+                                qGray(ptr_supDown[x - 1]) != 64 &&
+                                qGray(ptr_dirDown[x - 1]) > 112.5 &&
+                                qGray(ptr_dirDown[x - 1]) <= 157.5 &&
+                                qGray(ptr_magDown[x - 1]) > qGray(ptr_magDown2[x]) &&
+                                qGray(ptr_magDown[x - 1]) > qGray(ptr_magnitude[x - 2]))
+                        {
+                            ptr_supDown[x - 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+
+                        /* Right-Top */
+                        if (qGray(ptr_magUp[x + 1]) >= tmin &&
+                                qGray(ptr_supUp[x + 1]) != 64 &&
+                                qGray(ptr_dirUp[x + 1]) > 112.5 &&
+                                qGray(ptr_dirUp[x + 1]) <= 157.5 &&
+                                qGray(ptr_magUp[x + 1]) > qGray(ptr_magUp2[x]) &&
+                                qGray(ptr_magUp[x + 1]) > qGray(ptr_magnitude[x + 2]))
+                        {
+                            ptr_supUp[x + 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+                    }
+                    else if (direction > 67.5 && direction <= 112.5) {
+
+                        /* Left */
+                        if (qGray(ptr_magnitude[x - 1]) >= tmin &&
+                                qGray(ptr_suppression[x - 1]) != 64 &&
+                                qGray(ptr_direction[x - 1]) > 67.5 &&
+                                qGray(ptr_direction[x - 1]) <= 112.5 &&
+                                qGray(ptr_magnitude[x - 1]) > qGray(ptr_magDown[x - 1]) &&
+                                qGray(ptr_magnitude[x - 1]) > qGray(ptr_magUp[x - 1]))
+                        {
+                            ptr_suppression[x - 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+
+                        /* Right */
+                        if (qGray(ptr_magnitude[x + 1]) >= tmin &&
+                                qGray(ptr_suppression[x + 1]) != 64 &&
+                                qGray(ptr_direction[x + 1]) > 67.5 &&
+                                qGray(ptr_direction[x + 1]) <= 112.5 &&
+                                qGray(ptr_magnitude[x + 1]) > qGray(ptr_magUp[x + 1]) &&
+                                qGray(ptr_magnitude[x + 1]) > qGray(ptr_magDown[x + 1]))
+                        {
+                            ptr_suppression[x + 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+                    }
+                    else if(direction > 22.5 && direction <= 67.5) {
+
+                        /* Right-Bottom */
+                        if (qGray(ptr_magDown[x + 1]) >= tmin &&
+                                qGray(ptr_supDown[x + 1]) != 64 &&
+                                qGray(ptr_dirDown[x + 1]) > 22.5 &&
+                                qGray(ptr_dirDown[x + 1]) <= 67.5 &&
+                                qGray(ptr_magDown[x + 1]) > qGray(ptr_magnitude[x + 2]) &&
+                                qGray(ptr_magDown[x + 1]) > qGray(ptr_magDown2[x]))
+                        {
+                            ptr_supDown[x + 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+
+                        /* Left-Top */
+                        if (qGray(ptr_magUp[x - 1]) >= tmin &&
+                                qGray(ptr_supUp[x - 1]) != 64 &&
+                                qGray(ptr_dirUp[x - 1]) > 22.5 &&
+                                qGray(ptr_dirUp[x - 1]) <= 67.5 &&
+                                qGray(ptr_magUp[x - 1]) > qGray(ptr_magnitude[x - 2]) &&
+                                qGray(ptr_magUp[x - 1]) > qGray(ptr_magUp2[x]))
+                        {
+                            ptr_supUp[x - 1] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+                    }
+                    else {
+
+                        /* Bottom */
+                        if (qGray(ptr_magDown[x]) >= tmin &&
+                                qGray(ptr_supDown[x]) != 64 &&
+                                qGray(ptr_dirDown[x]) < 22.5 &&
+                                qGray(ptr_dirDown[x]) >= 157.5 &&
+                                qGray(ptr_magDown[x]) > qGray(ptr_magDown[x + 1]) &&
+                                qGray(ptr_magDown[x]) > qGray(ptr_magDown[x - 1]))
+                        {
+                            ptr_supDown[x] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+
+                        /* Top */
+                        if (qGray(ptr_magUp[x]) >= tmin &&
+                                qGray(ptr_supUp[x]) != 64 &&
+                                qGray(ptr_dirUp[x]) < 22.5 &&
+                                qGray(ptr_dirUp[x]) >= 157.5 &&
+                                qGray(ptr_magUp[x]) > qGray(ptr_magUp[x + 1]) &&
+                                qGray(ptr_magUp[x]) > qGray(ptr_magUp[x - 1]))
+                        {
+                            ptr_supUp[x] = qRgb(255, 255, 255);
+                            flag = true;
+                        }
+                    }
                 }
             }
         }
@@ -177,7 +286,7 @@ void CannyFilter::processImage()
 //    windowB->show();
 
     //sendImage(output_suppression);
-    sendImage(output_direction);
+    sendImage(output_suppression);
 }
 
 void CannyFilter::overloadImage(QImage value)

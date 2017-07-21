@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
     gaussUnsharpFilter = new GaussUnsharpFilter;
     staticFilter = new StaticFilter;
-    cannyFilter = new CannyFilter;
+    cannyFilter = new Canny;
 
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
@@ -44,7 +44,8 @@ void MainWindow::on_actionStatic_Min_Max_Median_triggered()
 
 void MainWindow::on_actionCanny_triggered()
 {
-    cannyFilter->processImage();
+    cannyFilter->show();
+
 }
 
 

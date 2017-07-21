@@ -31,7 +31,6 @@ void Canny::setImage(QImage value)
 void Canny::processImage()
 {
     int radius = 1, sum_rv, sum_gv, sum_bv, sum_rh, sum_gh, sum_bh, mask_index;
-    int tmin = 15, tmax = 150;
     QImage output_suppression = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_horizontal = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage output_vertical = QImage(image.width(), image.height(), QImage::Format_RGB32);
@@ -40,7 +39,7 @@ void Canny::processImage()
     QImage output_canny = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     /* 1. Preprocessing - Gauss */
-    gaussUnsharpFilter->gaussianFilterFastCanny(2, 140);
+    gaussUnsharpFilter->gaussianFilterFastCanny(radius_gauss, 140);
 
     /* 2. Calculating Gradients (Magnitude) & Direction */
     for (int y = 0; y < image.height(); ++y) {
@@ -299,7 +298,7 @@ void Canny::processImage()
 //    windowB->show();
 
     //sendImage(output_suppression);
-    sendImage(output_suppression);
+    sendImage(output_canny);
 }
 
 void Canny::overloadImage(QImage value)
@@ -309,5 +308,25 @@ void Canny::overloadImage(QImage value)
 
 void Canny::on_pbCalculate_clicked()
 {
+    radius_gauss = ui->sbRadius->value();
+    tmin = ui->sbTmin->value();
+    tmax = ui->sbTmax->value();
     processImage();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

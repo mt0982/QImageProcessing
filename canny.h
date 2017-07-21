@@ -29,14 +29,28 @@ private:
     QImage image;
     GaussUnsharpFilter *gaussUnsharpFilter;
     QVector<int> xSobel, ySobel;
+    int radius_gauss, tmin, tmax;
 
 public slots:
     void overloadImage(QImage value);
 
 signals:
     void sendImage(QImage);
+
 private slots:
     void on_pbCalculate_clicked();
 };
 
 #endif // CANNY_H
+
+
+
+
+
+
+
+
+
+
+
+

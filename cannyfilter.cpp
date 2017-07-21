@@ -155,13 +155,13 @@ void CannyFilter::processImage()
 
             for (int x = 0; x < image.width(); ++x) {
                 QRgb *ptr_magDown = (QRgb*)output_magnitude.scanLine(y - 1);
-                QRgb *ptr_magUp = (QRgb*)output_magnitude.scanLine(y - 1);
+                QRgb *ptr_magUp = (QRgb*)output_magnitude.scanLine(y + 1);
                 QRgb *ptr_supDown = (QRgb*)output_suppression.scanLine(y - 1);
-                QRgb *ptr_supUp = (QRgb*)output_suppression.scanLine(y - 1);
-                QRgb *ptr_dirDown = (QRgb*)output_suppression.scanLine(y - 1);
-                QRgb *ptr_dirUp = (QRgb*)output_suppression.scanLine(y - 1);
+                QRgb *ptr_supUp = (QRgb*)output_suppression.scanLine(y + 1);
+                QRgb *ptr_dirDown = (QRgb*)output_direction.scanLine(y - 1);
+                QRgb *ptr_dirUp = (QRgb*)output_direction.scanLine(y + 1);
                 QRgb *ptr_magDown2 = (QRgb*)output_magnitude.scanLine(y - 2);
-                QRgb *ptr_magUp2 = (QRgb*)output_magnitude.scanLine(y - 2);
+                QRgb *ptr_magUp2 = (QRgb*)output_magnitude.scanLine(y + 2);
 
                 if (qGray(ptr_suppression[x]) == 255) {
 
@@ -218,6 +218,7 @@ void CannyFilter::processImage()
                         {
                             ptr_suppression[x + 1] = qRgb(255, 255, 255);
                             flag = true;
+                            qDebug() << "A";
                         }
                     }
                     else if(direction > 22.5 && direction <= 67.5) {
@@ -277,6 +278,13 @@ void CannyFilter::processImage()
         }
     }
 
+    QRgb *ptr_aaa = (QRgb*)output_suppression.bits();
+    QRgb *ptr_canny = (QRgb*)output_canny.bits();
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+        if (qGray(ptr_aaa[i]) == 64)
+            ptr_canny[i] = qRgb(255, 255, 255);
+    }
+
 //    QLabel *windowA = new QLabel;
 //    windowA->setPixmap(QPixmap::fromImage(output_horizontal));
 //    windowA->show();
@@ -286,7 +294,7 @@ void CannyFilter::processImage()
 //    windowB->show();
 
     //sendImage(output_suppression);
-    sendImage(output_suppression);
+    sendImage(output_canny);
 }
 
 void CannyFilter::overloadImage(QImage value)

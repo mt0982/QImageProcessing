@@ -380,24 +380,31 @@ void StaticFilter::on_pushButton_clicked()
 
                 for (int j = -radius; j <= radius; ++j) {
                     int xindex = ((x + j) > image.width()) ? x - j : abs(x + j);
-                    distance = exp((-0.5 * sqrt((pow(x - (xindex), 2) + pow(y - (yindex), 2))) / pow(sigma_distance, 2)));
-                    intensity_r = exp((-0.5 * pow(qRed(ptr_kernel[xindex]) - qRed(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
-                    intensity_g = exp((-0.5 * pow(qGreen(ptr_kernel[xindex]) - qGreen(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
-                    intensity_b = exp((-0.5 * pow(qBlue(ptr_kernel[xindex]) - qBlue(ptr_input[x]), 2)) / pow(sigma_intensity, 2));
+                    distance = sqrt(pow(x - (xindex), 2) + pow(y - (yindex), 2));
+                    intensity_r = sqrt(pow(qRed(ptr_kernel[xindex]) - qRed(ptr_input[x]), 2));
+                    intensity_g = sqrt(pow(qGreen(ptr_kernel[xindex]) - qGreen(ptr_input[x]), 2));
+                    intensity_b = sqrt(pow(qBlue(ptr_kernel[xindex]) - qBlue(ptr_input[x]), 2));
 
-                    norm_r += (distance * intensity_r);
-                    norm_g += (distance * intensity_g);
-                    norm_b += (distance * intensity_b);
+                    float weight_r = 1.0 / (exp(pow((distance / sigma_distance), 2) * 0.5) *
+                            exp(pow((intensity_r / sigma_intensity), 2) * 0.5));
 
-                    mred += (qRed(ptr_kernel[xindex]) * distance * intensity_r);
-                    mgreen += (qGreen(ptr_kernel[xindex]) * distance * intensity_g);
-                    mblue += (qBlue(ptr_kernel[xindex]) * distance * intensity_b);
+                    float weight_g = 1.0 / (exp(pow((distance / sigma_distance), 2) * 0.5) *
+                            exp(pow((intensity_g / sigma_intensity), 2) * 0.5));
+
+                    float weight_b = 1.0 / (exp(pow((distance / sigma_distance), 2) * 0.5) *
+                            exp(pow((intensity_b / sigma_intensity), 2) * 0.5));
+
+                    norm_r += weight_r; //(distance * intensity_r);
+                    norm_g += weight_g; //(distance * intensity_g);
+                    norm_b += weight_b; //(distance * intensity_b);
+
+                    mred += qRed(ptr_kernel[xindex]) * weight_r;     //(qRed(ptr_kernel[xindex]) * distance * intensity_r);
+                    mgreen += qGreen(ptr_kernel[xindex]) * weight_g; //(qGreen(ptr_kernel[xindex]) * distance * intensity_g);
+                    mblue += qBlue(ptr_kernel[xindex]) * weight_b;   //(qBlue(ptr_kernel[xindex]) * distance * intensity_b);
                 }
             }
 
             ptr_output[x] = qRgb(mred / norm_r, mgreen / norm_g, mblue / norm_b);
-            if(qRed(ptr_input[x]) != qRed(ptr_output[x]) && (qRed(ptr_output[x]) != 0))
-                qDebug() << qRed(ptr_input[x]) << qRed(ptr_output[x]);
         }
     }
 

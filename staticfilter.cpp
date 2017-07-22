@@ -176,13 +176,14 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
     int radius_min = ui->sbRadius->value();
     int radius_max = ui->sbRadiusMax->value(), med;
     bool ended;
-    QVector<int> mred;
+    QVector<int> mvec;
     output = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_input = (QRgb*)image.scanLine(y);
         QRgb *ptr_output = (QRgb*)output.scanLine(y);
 
+        /* RED */
         for (int x = 0; x < image.width(); ++x) {
 
             /* Reset Radius Value */
@@ -192,9 +193,7 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
             /* Adaptive Median */
             while (radius_min <= radius_max) {
                 med = pow(radius_min * 2 + 1, 2) / 2;
-                mred.clear();
-
-                if (radius_min != 1) qDebug() << radius_min;
+                mvec.clear();
 
                 for (int i = -radius_min; i <= radius_min; ++i) {
                     int index = ((y + i) > image.height()) ? y - i : abs(y + i);
@@ -203,33 +202,30 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
                     for (int j = -radius_min; j <= radius_min; ++j) {
                         index = ((x + j) > image.width()) ? x - j : abs(x + j);
                         int red = qRed(ptr_image[index]);
-                        /*int green = qGreen(ptr_image[index]);
-                        int blue = qBlue(ptr_image[index]);*/
 
-                        mred.push_back(red);
+                        mvec.push_back(red);
                     }
                 }
 
-               std::sort(mred.begin(), mred.end());
-               int mmin = mred[0];
-               int mmed = mred[med];
-               int mmax = mred[mred.size() - 1];
+               std::sort(mvec.begin(), mvec.end());
+               int mmin = mvec[0];
+               int mmed = mvec[med];
+               int mmax = mvec[mvec.size() - 1];
 
                int A1 = mmed - mmin;
                int A2 = mmed - mmax;
 
-               /* Red */
                if (A1 > 0 && A2 < 0) {
 
                    int B1 = qRed(ptr_input[x]) - mmin;
                    int B2 = qRed(ptr_input[x]) - mmax;
 
                    if (B1 > 0 && B2 < 0) {
-                       ptr_output[x] = qRgb(qRed(ptr_input[x]), qRed(ptr_input[x]), qRed(ptr_input[x]));
+                       ptr_output[x] += qRgb(qRed(ptr_input[x]), 0, 0);
                        ended = true;
                        break;
                    } else {
-                       ptr_output[x] = qRgb(mmed, mmed, mmed);
+                       ptr_output[x] += qRgb(mmed, 0, 0);
                        ended = true;
                        break;
                    }
@@ -238,9 +234,121 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
                radius_min++;
             }
 
-            std::sort(mred.begin(), mred.end());
-            int mmed = mred[med];
-            if (!ended) ptr_output[x] = qRgb(mmed, mmed, mmed);
+            std::sort(mvec.begin(), mvec.end());
+            int mmed = mvec[med];
+            if (!ended) ptr_output[x] += qRgb(mmed, 0, 0);
+        }
+
+        /* GREEN */
+        for (int x = 0; x < image.width(); ++x) {
+
+            /* Reset Radius Value */
+            radius_min = ui->sbRadius->value();
+            ended = false;
+
+            /* Adaptive Median */
+            while (radius_min <= radius_max) {
+                med = pow(radius_min * 2 + 1, 2) / 2;
+                mvec.clear();
+
+                for (int i = -radius_min; i <= radius_min; ++i) {
+                    int index = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    QRgb *ptr_image = (QRgb*)image.scanLine(index);
+
+                    for (int j = -radius_min; j <= radius_min; ++j) {
+                        index = ((x + j) > image.width()) ? x - j : abs(x + j);
+                        int green = qGreen(ptr_image[index]);
+
+                        mvec.push_back(green);
+                    }
+                }
+
+               std::sort(mvec.begin(), mvec.end());
+               int mmin = mvec[0];
+               int mmed = mvec[med];
+               int mmax = mvec[mvec.size() - 1];
+
+               int A1 = mmed - mmin;
+               int A2 = mmed - mmax;
+
+               if (A1 > 0 && A2 < 0) {
+
+                   int B1 = qGreen(ptr_input[x]) - mmin;
+                   int B2 = qGreen(ptr_input[x]) - mmax;
+
+                   if (B1 > 0 && B2 < 0) {
+                       ptr_output[x] += qRgb(0, qGreen(ptr_input[x]), 0);
+                       ended = true;
+                       break;
+                   } else {
+                       ptr_output[x] += qRgb(0, mmed, 0);
+                       ended = true;
+                       break;
+                   }
+               }
+
+               radius_min++;
+            }
+
+            std::sort(mvec.begin(), mvec.end());
+            int mmed = mvec[med];
+            if (!ended) ptr_output[x] += qRgb(0, mmed, 0);
+        }
+
+        /* BLUE */
+        for (int x = 0; x < image.width(); ++x) {
+
+            /* Reset Radius Value */
+            radius_min = ui->sbRadius->value();
+            ended = false;
+
+            /* Adaptive Median */
+            while (radius_min <= radius_max) {
+                med = pow(radius_min * 2 + 1, 2) / 2;
+                mvec.clear();
+
+                for (int i = -radius_min; i <= radius_min; ++i) {
+                    int index = ((y + i) > image.height()) ? y - i : abs(y + i);
+                    QRgb *ptr_image = (QRgb*)image.scanLine(index);
+
+                    for (int j = -radius_min; j <= radius_min; ++j) {
+                        index = ((x + j) > image.width()) ? x - j : abs(x + j);
+                        int blue = qBlue(ptr_image[index]);
+
+                        mvec.push_back(blue);
+                    }
+                }
+
+               std::sort(mvec.begin(), mvec.end());
+               int mmin = mvec[0];
+               int mmed = mvec[med];
+               int mmax = mvec[mvec.size() - 1];
+
+               int A1 = mmed - mmin;
+               int A2 = mmed - mmax;
+
+               if (A1 > 0 && A2 < 0) {
+
+                   int B1 = qBlue(ptr_input[x]) - mmin;
+                   int B2 = qBlue(ptr_input[x]) - mmax;
+
+                   if (B1 > 0 && B2 < 0) {
+                       ptr_output[x] += qRgb(0, 0, qBlue(ptr_input[x]));
+                       ended = true;
+                       break;
+                   } else {
+                       ptr_output[x] += qRgb(0, 0, mmed);
+                       ended = true;
+                       break;
+                   }
+               }
+
+               radius_min++;
+            }
+
+            std::sort(mvec.begin(), mvec.end());
+            int mmed = mvec[med];
+            if (!ended) ptr_output[x] += qRgb(0, 0, mmed);
         }
     }
 

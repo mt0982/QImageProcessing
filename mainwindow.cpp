@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow), outputWindow(NULL)
 {
     ui->setupUi(this);
     gaussKernel = new GaussKernel;
@@ -31,7 +31,12 @@ void MainWindow::on_actionGauss_triggered()
 void MainWindow::setImage(QImage image)
 {
     qDebug() << "MainWindow::setImage(QImage image)";
-    ui->labelImage->setPixmap(QPixmap::fromImage(image));
+    //ui->labelImage->setPixmap(QPixmap::fromImage(image));
+
+    /* It's necessay, fix some color problems */
+    outputWindow = new QLabel;
+    outputWindow->setPixmap(QPixmap::fromImage(image));
+    outputWindow->show();
 }
 
 void MainWindow::on_actionStatic_Min_Max_Median_triggered()

@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QDebug>
+#include <QLabel>
 #include "gausskernel.h"
 #include "staticfilter.h"
 
@@ -29,6 +30,7 @@ private:
 
     GaussKernel *gaussKernel;
     StaticFilter *staticFilter;
+    QLabel *outputWindow;
 };
 
 #endif // MAINWINDOW_H

@@ -16,7 +16,7 @@ void StaticFilter::setImage(const QImage &value)
     image = value;
 }
 
-void StaticFilter::filter(int nr)
+void StaticFilter::filter(int nr, bool send)
 {
     /* Parameters */
     int radius = ui->sbRadius->value();
@@ -60,7 +60,7 @@ void StaticFilter::filter(int nr)
     }
 
     /* Send Output */
-    sendImage(output);
+    if (send) sendImage(output);
 }
 
 void StaticFilter::on_pbMinimum_clicked()
@@ -81,16 +81,16 @@ void StaticFilter::on_pushButton_3_clicked()
 void StaticFilter::on_pbOpening_clicked()
 {
     QImage tmp = image;
-    filter(1);
+    filter(1, false);
     image = output;
-    filter(2);
+    filter(0);
     image = tmp;
 }
 
 void StaticFilter::on_pbClosing_clicked()
 {
     QImage tmp = image;
-    filter(0);
+    filter(0, false);
     image = output;
     filter(1);
     image = tmp;
@@ -396,6 +396,8 @@ void StaticFilter::on_pushButton_clicked()
             }
 
             ptr_output[x] = qRgb(mred / norm_r, mgreen / norm_g, mblue / norm_b);
+            if(qRed(ptr_input[x]) != qRed(ptr_output[x]) && (qRed(ptr_output[x]) != 0))
+                qDebug() << qRed(ptr_input[x]) << qRed(ptr_output[x]);
         }
     }
 

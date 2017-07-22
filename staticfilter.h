@@ -55,7 +55,7 @@ public:
     ~StaticFilter();
 
     void setImage(const QImage &value);
-    void filter(int nr);
+    void filter(int nr, bool send = true);
 
 signals:
     void sendImage(QImage);

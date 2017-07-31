@@ -5,6 +5,7 @@
 #include <QVector3D>
 #include <QVector>
 #include <QDebug>
+#include <QGenericMatrix>
 
 class Color {
 private:

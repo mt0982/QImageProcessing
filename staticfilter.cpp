@@ -366,6 +366,13 @@ void StaticFilter::on_pushButton_clicked()
     double distance, intensity_r, intensity_g, intensity_b;
     double norm_r, norm_g, norm_b, mred, mgreen, mblue;
 
+    /* Circural - values to remove */
+    QVector<int> index3x3 = {0, 2, 6, 8};
+    QVector<int> index5x5 = {0, 1, 3, 4, 5, 9, 15, 19, 20, 21, 23, 24};
+    QVector<int> index7x7 = {0, 1, 2, 4, 5, 6, 7, 8, 12, 13, 14, 20, 28, 34, 35, 36, 40, 41, 42, 43, 44, 46, 47, 48};
+    QVector<int> index9x9 = {0, 2, 6, 8};
+    QVector<int> index11x11 = {0, 2, 6, 8};
+
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_input = (QRgb*)image.scanLine(y);
         QRgb *ptr_output = (QRgb*)output.scanLine(y);
@@ -373,6 +380,7 @@ void StaticFilter::on_pushButton_clicked()
         for (int x = 0; x < image.width(); ++x) {
 
             norm_r = norm_g = norm_b = mred = mgreen = mblue = 0;
+            QGenericMatrix<7, 7, float> matrix;
 
             for (int i = -radius; i <= radius; ++i) {
                 int yindex = ((y + i) > image.height()) ? y - i : abs(y + i);
@@ -380,7 +388,26 @@ void StaticFilter::on_pushButton_clicked()
 
                 for (int j = -radius; j <= radius; ++j) {
                     int xindex = ((x + j) > image.width()) ? x - j : abs(x + j);
-                    distance = exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2));
+
+                    int circularIndex = (i + radius) * (radius * 2 + 1) + (j + radius);
+
+                    switch (radius) {
+                    case 1:
+                        distance = (!index3x3.contains(circularIndex)) ?
+                                        exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2)) : 0;
+                        break;
+                    case 2:
+                        distance = (!index5x5.contains(circularIndex)) ?
+                                        exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2)) : 0;
+                        break;
+                    case 3:
+                        distance = (!index7x7.contains(circularIndex)) ?
+                                        exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2)) : 0;
+                        break;
+                    default:
+                        break;
+                    }
+
                     intensity_r = exp(-0.5*(pow(qRed(ptr_kernel[xindex]) - qRed(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
                     intensity_g = exp(-0.5*(pow(qGreen(ptr_kernel[xindex]) - qGreen(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
                     intensity_b = exp(-0.5*(pow(qBlue(ptr_kernel[xindex]) - qBlue(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
@@ -392,8 +419,13 @@ void StaticFilter::on_pushButton_clicked()
                     mred += (qRed(ptr_kernel[xindex]) * distance * intensity_r);
                     mgreen += (qGreen(ptr_kernel[xindex]) * distance * intensity_g);
                     mblue += (qBlue(ptr_kernel[xindex]) * distance * intensity_b);
+
+                    /* Gauss Kernel */
+                    matrix.data()[circularIndex] = distance;
                 }
             }
+
+            qDebug() << matrix; return;
 
             ptr_output[x] = qRgb(mred / norm_r, mgreen / norm_g, mblue / norm_b);
         }

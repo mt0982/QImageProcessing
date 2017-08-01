@@ -36,6 +36,12 @@ void MorfologicalFilter::thresholding()
     sendImage(output);
 }
 
+void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)
+{
+    ui->tableWidget->setRowCount(arg1 * 2 + 1);
+    ui->tableWidget->setColumnCount(arg1 * 2 + 1);
+}
+
 
 
 

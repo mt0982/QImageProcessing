@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <QTableWidget>
+#include <QSpinBox>
 #include <Pattern/facadeimage.h>
 
 namespace Ui {
@@ -18,6 +20,7 @@ public:
 
 private slots:
     void on_pbContourExtraction_clicked();
+    void on_sbRadius_valueChanged(int arg1);
 
 private:
     Ui::MorfologicalFilter *ui;

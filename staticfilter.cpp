@@ -4,6 +4,9 @@
 StaticFilter::StaticFilter(QWidget *parent) : QWidget(parent), ui(new Ui::StaticFilter)
 {
     ui->setupUi(this);
+
+    connect(ui->cbCircular, &QCheckBox::clicked, [=](const bool flag) {ui->cbNormal->setChecked(!flag);});
+    connect(ui->cbNormal, &QCheckBox::clicked, [=](const bool flag) {ui->cbCircular->setChecked(!flag);});
 }
 
 StaticFilter::~StaticFilter()
@@ -367,21 +370,26 @@ void StaticFilter::on_pushButton_clicked()
     double norm_r, norm_g, norm_b, mred, mgreen, mblue;
 
     /* Circular Kernel */
-    int size = pow(radius * 2 + 1, 2);
-    int index = radius, range = 0;
-    int *array = new int[size];
-    memset(array, 0, size * sizeof(int));
+    int size = pow(radius * 2 + 1, 2);                  //0 0 * 0 0
+    int index = radius, range = 0;                      //0 * * * 0
+    int *array = new int[size];                         //* * * * *
+                                                        //0 * * * 0
+    if (ui->cbCircular->isChecked()) {                  //0 0 * 0 0
+        memset(array, 0, size * sizeof(int));
 
-    while (index <= (size - 1 - radius)) {
+        while (index <= (size - 1 - radius)) {
 
-        for (int offset = -range; offset <= range; ++offset) {
+            for (int offset = -range; offset <= range; ++offset) {
 
-            array[index + offset] = 1;
+                array[index + offset] = 1;
+            }
+
+            index += (radius * 2 + 1);
+            if (index <= size / 2) range++;
+            else range--;
         }
-
-        index += (radius * 2 + 1);
-        if (index <= size / 2) range++;
-        else range--;
+    } else {
+        memset(array, 1, size * sizeof(int));
     }
 
     /* Bilateral */
@@ -422,7 +430,7 @@ void StaticFilter::on_pushButton_clicked()
                 }
             }
 
-            qDebug() << matrix; return;
+            //qDebug() << matrix; return;
 
             ptr_output[x] = qRgb(mred / norm_r, mgreen / norm_g, mblue / norm_b);
         }

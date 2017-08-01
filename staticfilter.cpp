@@ -380,7 +380,6 @@ void StaticFilter::on_pushButton_clicked()
         while (index <= (size - 1 - radius)) {
 
             for (int offset = -range; offset <= range; ++offset) {
-
                 array[index + offset] = 1;
             }
 
@@ -400,7 +399,7 @@ void StaticFilter::on_pushButton_clicked()
         for (int x = 0; x < image.width(); ++x) {
 
             norm_r = norm_g = norm_b = mred = mgreen = mblue = 0;
-            QGenericMatrix<7, 7, float> matrix;
+            QGenericMatrix<3, 3, float> matrix;
 
             for (int i = -radius; i <= radius; ++i) {
                 int yindex = ((y + i) > image.height()) ? y - i : abs(y + i);
@@ -412,7 +411,7 @@ void StaticFilter::on_pushButton_clicked()
                     int circularIndex = (i + radius) * (radius * 2 + 1) + (j + radius);
 
                     distance = (!array[circularIndex]) ? 0 :
-                                exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2));
+                               exp(-0.5 * (pow(x - (xindex), 2) + pow(y - (yindex), 2)) / pow(sigma_distance, 2));
                     intensity_r = exp(-0.5*(pow(qRed(ptr_kernel[xindex]) - qRed(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
                     intensity_g = exp(-0.5*(pow(qGreen(ptr_kernel[xindex]) - qGreen(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
                     intensity_b = exp(-0.5*(pow(qBlue(ptr_kernel[xindex]) - qBlue(ptr_input[x]), 2) / pow(sigma_intensity, 2)));
@@ -426,7 +425,7 @@ void StaticFilter::on_pushButton_clicked()
                     mblue += (qBlue(ptr_kernel[xindex]) * distance * intensity_b);
 
                     /* Gauss Kernel */
-                    matrix.data()[circularIndex] = distance;
+                    //matrix.data()[circularIndex] = distance;
                 }
             }
 

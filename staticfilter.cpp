@@ -1,7 +1,7 @@
 #include "staticfilter.h"
 #include "ui_staticfilter.h"
 
-StaticFilter::StaticFilter(QWidget *parent) : QWidget(parent), ui(new Ui::StaticFilter)
+StaticFilter::StaticFilter(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::StaticFilter)
 {
     ui->setupUi(this);
 
@@ -12,11 +12,6 @@ StaticFilter::StaticFilter(QWidget *parent) : QWidget(parent), ui(new Ui::Static
 StaticFilter::~StaticFilter()
 {
     delete ui;
-}
-
-void StaticFilter::setImage(const QImage &value)
-{
-    image = value;
 }
 
 void StaticFilter::filter(int nr, bool send)

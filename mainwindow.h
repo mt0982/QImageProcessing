@@ -10,6 +10,7 @@
 #include "staticfilter.h"
 #include "morfologicalfilter.h"
 #include "canny.h"
+#include "Pattern/facadeimage.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,7 +28,6 @@ private slots:
     void setImage(QImage image);
     void on_actionStatic_Min_Max_Median_triggered();
     void on_actionCanny_triggered();
-
     void on_actionMorfological_triggered();
 
 private:

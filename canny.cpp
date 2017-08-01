@@ -1,7 +1,7 @@
 #include "canny.h"
 #include "ui_canny.h"
 
-Canny::Canny(QWidget *parent) : QWidget(parent), ui(new Ui::Canny)
+Canny::Canny(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Canny)
 {
     ui->setupUi(this);
 
@@ -22,7 +22,7 @@ Canny::~Canny()
     delete ui;
 }
 
-void Canny::setImage(QImage value)
+void Canny::setImage(const QImage &value)
 {
     image = value;
     gaussUnsharpFilter->setImage(value);
@@ -313,6 +313,7 @@ void Canny::on_pbCalculate_clicked()
     tmax = ui->sbTmax->value();
     processImage();
 }
+
 
 
 

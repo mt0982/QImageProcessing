@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QGenericMatrix>
+#include <Pattern/facadeimage.h>
 
 class Color {
 private:
@@ -47,19 +48,15 @@ namespace Ui {
 class StaticFilter;
 }
 
-class StaticFilter : public QWidget
+class StaticFilter : public FacadeImage
 {
     Q_OBJECT
 
 public:
-    explicit StaticFilter(QWidget *parent = 0);
+    explicit StaticFilter(FacadeImage *parent = 0);
     ~StaticFilter();
 
-    void setImage(const QImage &value);
     void filter(int nr, bool send = true);
-
-signals:
-    void sendImage(QImage);
 
 private slots:
     void on_pbMinimum_clicked();
@@ -73,9 +70,6 @@ private slots:
 
 private:
     Ui::StaticFilter *ui;
-
-    QImage image;
-    QImage output;
 };
 
 #endif // STATICFILTER_H

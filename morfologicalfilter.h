@@ -3,31 +3,24 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <Pattern/facadeimage.h>
 
 namespace Ui {
 class MorfologicalFilter;
 }
 
-class MorfologicalFilter : public QWidget {
+class MorfologicalFilter : public FacadeImage {
     Q_OBJECT
 
 public:
-    explicit MorfologicalFilter(QWidget *parent = 0);
+    explicit MorfologicalFilter(FacadeImage *parent = 0);
     ~MorfologicalFilter();
-
-    void setImage(const QImage &value);
 
 private slots:
     void on_pbContourExtraction_clicked();
 
-signals:
-    void sendImage(QImage);
-
 private:
     Ui::MorfologicalFilter *ui;
-
-    QImage image;
-    QImage output;
 
     void thresholding();
 };

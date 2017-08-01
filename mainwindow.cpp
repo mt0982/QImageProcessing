@@ -4,27 +4,23 @@
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow), outputWindow(NULL)
 {
     ui->setupUi(this);
-    facadeImage = new FacadeImage;
     gaussUnsharpFilter = new GaussUnsharpFilter;
-    staticFilter = new StaticFilter; //static_cast<StaticFilter*>(facadeImage);
+    staticFilter = new StaticFilter;
     cannyFilter = new Canny;
     morfologicalFilter = new MorfologicalFilter;
 
-//    connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
-//    connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
-//    connect(cannyFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
-//    connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
-    connect(facadeImage, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(cannyFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
     QImage image("/home/asus/Obrazy/lena.png");
-    //QImage output = QImage(image.width(), image.height(), QImage::Format_RGB32);
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
 
-//    gaussUnsharpFilter->setImage(image);
-//    staticFilter->setImage(image);
-//    cannyFilter->setImage(image);
-//    morfologicalFilter->setImage(image);
-    facadeImage->setImage(image);
+    gaussUnsharpFilter->setImage(image);
+    staticFilter->setImage(image);
+    cannyFilter->setImage(image);
+    morfologicalFilter->setImage(image);
 }
 
 MainWindow::~MainWindow()

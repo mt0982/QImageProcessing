@@ -1,7 +1,7 @@
 #include "morfologicalfilter.h"
 #include "ui_morfologicalfilter.h"
 
-MorfologicalFilter::MorfologicalFilter(QWidget *parent): QWidget(parent), ui(new Ui::MorfologicalFilter)
+MorfologicalFilter::MorfologicalFilter(FacadeImage *parent): FacadeImage(parent), ui(new Ui::MorfologicalFilter)
 {
     ui->setupUi(this);
 }
@@ -9,11 +9,6 @@ MorfologicalFilter::MorfologicalFilter(QWidget *parent): QWidget(parent), ui(new
 MorfologicalFilter::~MorfologicalFilter()
 {
     delete ui;
-}
-
-void MorfologicalFilter::setImage(const QImage &value)
-{
-    image = value;
 }
 
 void MorfologicalFilter::on_pbContourExtraction_clicked()

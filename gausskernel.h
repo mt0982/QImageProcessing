@@ -3,19 +3,19 @@
 
 #include <QWidget>
 #include <QDebug>
+#include <Pattern/facadeimage.h>
 
 namespace Ui {
 class GaussKernel;
 }
 
-class GaussUnsharpFilter : public QWidget {
+class GaussUnsharpFilter : public FacadeImage {
     Q_OBJECT
 
 public:
-    explicit GaussUnsharpFilter(QWidget *parent = 0);
+    explicit GaussUnsharpFilter(FacadeImage *parent = 0);
     ~GaussUnsharpFilter();
 
-    void setImage(const QImage &value);
     void gaussianFilterFast();
     void gaussianFilterFastCanny(int radius, int sigma);
 
@@ -25,13 +25,9 @@ private slots:
     void on_pbCalculate_clicked();
     void on_pbUnsharp_clicked();
 
-signals:
-    void sendImage(QImage);
-
 private:
     Ui::GaussKernel *ui;
 
-    QImage image;
     QImage gaussImage;
 
     float mask_sum;

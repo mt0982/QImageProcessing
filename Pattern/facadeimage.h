@@ -12,13 +12,12 @@ protected:
 
 public:
     explicit FacadeImage(QWidget *parent = nullptr);
+    virtual ~FacadeImage();
 
-    void setImage(const QImage &value);
+    virtual void setImage(const QImage &value);
 
 signals:
     void sendImage(QImage);
-
-public slots:
 };
 
 #endif // FACADEIMAGE_H

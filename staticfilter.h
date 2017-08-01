@@ -48,7 +48,7 @@ namespace Ui {
 class StaticFilter;
 }
 
-class StaticFilter : public FacadeImage //QWidget
+class StaticFilter : public FacadeImage
 {
     Q_OBJECT
 

@@ -1,7 +1,7 @@
 #include "gausskernel.h"
 #include "ui_gausskernel.h"
 
-GaussUnsharpFilter::GaussUnsharpFilter(QWidget *parent): QWidget(parent), ui(new Ui::GaussKernel)
+GaussUnsharpFilter::GaussUnsharpFilter(FacadeImage *parent): FacadeImage(parent), ui(new Ui::GaussKernel)
 {
     ui->setupUi(this);
     setWindowTitle("Kernel");
@@ -70,11 +70,6 @@ void GaussUnsharpFilter::on_pbCalculate_clicked()
     qDebug() << "GaussKernel::on_pbCalculate_clicked()";
     //gaussianFilter();
     gaussianFilterFast();
-}
-
-void GaussUnsharpFilter::setImage(const QImage &value)
-{
-    image = value;
 }
 
 void GaussUnsharpFilter::gaussianFilter()

@@ -21,9 +21,12 @@ public:
 private slots:
     void on_pbContourExtraction_clicked();
     void on_sbRadius_valueChanged(int arg1);
+    void on_tableWidget_cellClicked(int row, int column);
 
 private:
     Ui::MorfologicalFilter *ui;
+
+    int **array;
 
     void thresholding();
 };

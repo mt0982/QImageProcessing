@@ -10,6 +10,7 @@
 #include "staticfilter.h"
 #include "morfologicalfilter.h"
 #include "canny.h"
+#include "Pattern/facadeimage.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +38,7 @@ private:
     StaticFilter *staticFilter;
     Canny *cannyFilter;
     MorfologicalFilter *morfologicalFilter;
+    FacadeImage *facadeImage;
     QLabel *outputWindow;
 };
 

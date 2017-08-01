@@ -46,6 +46,7 @@
     <addaction name="actionGauss"/>
     <addaction name="actionStatic_Min_Max_Median"/>
     <addaction name="actionCanny"/>
+    <addaction name="actionMorfological"/>
    </widget>
    <addaction name="menuFilters"/>
   </widget>
@@ -62,6 +63,11 @@
   <action name="actionCanny">
    <property name="text">
     <string>Canny</string>
+   </property>
+  </action>
+  <action name="actionMorfological">
+   <property name="text">
+    <string>Morfological</string>
    </property>
   </action>
  </widget>

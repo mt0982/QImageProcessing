@@ -7,10 +7,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     gaussUnsharpFilter = new GaussUnsharpFilter;
     staticFilter = new StaticFilter;
     cannyFilter = new Canny;
+    morfologicalFilter = new MorfologicalFilter;
 
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(cannyFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
     QImage image("/home/asus/Obrazy/lena.png");
     //QImage output = QImage(image.width(), image.height(), QImage::Format_RGB32);
@@ -19,16 +21,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     gaussUnsharpFilter->setImage(image);
     staticFilter->setImage(image);
     cannyFilter->setImage(image);
+    morfologicalFilter->setImage(image);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::on_actionGauss_triggered()
-{
-    gaussUnsharpFilter->show();
 }
 
 void MainWindow::setImage(QImage image)
@@ -42,6 +40,11 @@ void MainWindow::setImage(QImage image)
     outputWindow->show();
 }
 
+void MainWindow::on_actionGauss_triggered()
+{
+    gaussUnsharpFilter->show();
+}
+
 void MainWindow::on_actionStatic_Min_Max_Median_triggered()
 {
     staticFilter->show();
@@ -50,7 +53,11 @@ void MainWindow::on_actionStatic_Min_Max_Median_triggered()
 void MainWindow::on_actionCanny_triggered()
 {
     cannyFilter->show();
+}
 
+void MainWindow::on_actionMorfological_triggered()
+{
+    morfologicalFilter->show();
 }
 
 

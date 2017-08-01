@@ -8,6 +8,7 @@
 #include <QLabel>
 #include "gausskernel.h"
 #include "staticfilter.h"
+#include "morfologicalfilter.h"
 #include "canny.h"
 
 namespace Ui {
@@ -27,12 +28,15 @@ private slots:
     void on_actionStatic_Min_Max_Median_triggered();
     void on_actionCanny_triggered();
 
+    void on_actionMorfological_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     GaussUnsharpFilter *gaussUnsharpFilter;
     StaticFilter *staticFilter;
     Canny *cannyFilter;
+    MorfologicalFilter *morfologicalFilter;
     QLabel *outputWindow;
 };
 

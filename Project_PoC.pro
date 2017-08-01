@@ -16,14 +16,17 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     gausskernel.cpp \
     staticfilter.cpp \
-    canny.cpp
+    canny.cpp \
+    morfologicalfilter.cpp
 
 HEADERS  += mainwindow.h \
     gausskernel.h \
     staticfilter.h \
-    canny.h
+    canny.h \
+    morfologicalfilter.h
 
 FORMS    += mainwindow.ui \
     gausskernel.ui \
     staticfilter.ui \
-    canny.ui
+    canny.ui \
+    morfologicalfilter.ui

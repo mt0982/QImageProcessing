@@ -82,8 +82,18 @@ void MorfologicalFilter::erosion()
         }
     }
 
+    /* Boundary Extraction */
+    QImage extraction = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    QRgb *ptr_extraction = (QRgb*)extraction.bits();
+    QRgb *ptr_erosion = (QRgb*)imageErosion.bits();
+    QRgb *ptr_binary = (QRgb*)output.bits();
+
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+        ptr_extraction[i] = ptr_binary[i] - ptr_erosion[i];
+    }
+
     /* Send Output */
-    sendImage(imageErosion);
+    sendImage(extraction);
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)

@@ -12,6 +12,9 @@ MorfologicalFilter::MorfologicalFilter(FacadeImage *parent): FacadeImage(parent)
             array[i][j] = 0;
         }
     }
+
+    ui->sbY->setMaximum(ui->tableWidget->rowCount() - 1);
+    ui->sbX->setMaximum(ui->tableWidget->columnCount() - 1);
 }
 
 MorfologicalFilter::~MorfologicalFilter()
@@ -22,6 +25,14 @@ MorfologicalFilter::~MorfologicalFilter()
 void MorfologicalFilter::on_pbContourExtraction_clicked()
 {
     thresholding();
+
+    int wallLength = (ui->sbRadius->value() * 2 + 1) - 1;
+    int ystart = -ui->sbY->value();
+    int yend = wallLength - ui->sbY->value();
+    int xstart = -ui->sbX->value();
+    int xend = wallLength - ui->sbX->value();
+
+    qDebug() << ystart << yend << xstart << xend;
 }
 
 void MorfologicalFilter::thresholding()
@@ -57,6 +68,9 @@ void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)
             array[i][j] = 0;
         }
     }
+
+    ui->sbY->setMaximum(ui->tableWidget->rowCount() - 1);
+    ui->sbX->setMaximum(ui->tableWidget->columnCount() - 1);
 }
 
 void MorfologicalFilter::on_tableWidget_cellClicked(int row, int column)
@@ -72,10 +86,10 @@ void MorfologicalFilter::on_tableWidget_cellClicked(int row, int column)
         ui->tableWidget->model()->setData(modelIndex, QVariant(QBrush(Qt::blue)), Qt::BackgroundRole);
     }
 
-    qDebug() << array[0][0] << array[0][1] << array[0][2];
-    qDebug() << array[1][0] << array[1][1] << array[1][2];
-    qDebug() << array[2][0] << array[2][1] << array[2][2];
-    qDebug() << "";
+//    qDebug() << array[0][0] << array[0][1] << array[0][2];
+//    qDebug() << array[1][0] << array[1][1] << array[1][2];
+//    qDebug() << array[2][0] << array[2][1] << array[2][2];
+//    qDebug() << "";
 }
 
 

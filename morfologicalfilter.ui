@@ -53,7 +53,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spY">
+      <widget class="QSpinBox" name="sbY">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
          <horstretch>0</horstretch>

@@ -29,6 +29,7 @@ private:
     int **array;
 
     void thresholding();
+    int ystart, yend, xstart, xend;
 };
 
 #endif // MORFOLOGICALFILTER_H

@@ -74,12 +74,11 @@ void MorfologicalFilter::erosion()
 
                 for (int j = xstart; j <= xend; ++j) {
                     index = ((x+j) >= image.width()) ? x-j : abs(x+j);
-                    //qDebug() << array[i + abs(ystart)][j + abs(xstart)];
                     if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) isNull = true;
                 }
             }
 
-            ptr_output[x] = (isNull) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+            ptr_output[x] = (!isNull) ? qRgb(255, 255, 255) : qRgb(0,0,0);
         }
     }
 

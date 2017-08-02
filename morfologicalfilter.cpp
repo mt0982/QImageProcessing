@@ -24,21 +24,21 @@ MorfologicalFilter::~MorfologicalFilter()
 
 void MorfologicalFilter::on_pbContourExtraction_clicked()
 {
-    thresholding();
-
+    /* Structural Element Offsets */
     int wallLength = (ui->sbRadius->value() * 2 + 1) - 1;
-    int ystart = -ui->sbY->value();
-    int yend = wallLength - ui->sbY->value();
-    int xstart = -ui->sbX->value();
-    int xend = wallLength - ui->sbX->value();
+    ystart = -ui->sbY->value();
+    yend = wallLength - ui->sbY->value();
+    xstart = -ui->sbX->value();
+    xend = wallLength - ui->sbX->value();
 
-    qDebug() << ystart << yend << xstart << xend;
+    /* Binarization*/
+    thresholding();
 }
 
 void MorfologicalFilter::thresholding()
 {
     int threshold = 150;
-    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    output = QImage(image.width(), image.height(), QImage::Format_RGB32);       //Binarization
 
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_input = (QRgb*)image.scanLine(y);
@@ -52,7 +52,39 @@ void MorfologicalFilter::thresholding()
     }
 
     /* Send Output */
-    sendImage(output);
+    //sendImage(output);
+    erosion();
+}
+
+void MorfologicalFilter::erosion()
+{
+    QImage imageErosion(image.width(), image.height(), QImage::Format_RGB32);
+    //output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_output = (QRgb*)imageErosion.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            bool isNull = false;
+
+            for (int i = ystart; i <= yend; ++i) {
+                int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
+                QRgb *ptr_bin = (QRgb*)output.scanLine(index);
+
+                for (int j = xstart; j <= xend; ++j) {
+                    index = ((x+j) >= image.width()) ? x-j : abs(x+j);
+                    //qDebug() << array[i + abs(ystart)][j + abs(xstart)];
+                    if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) isNull = true;
+                }
+            }
+
+            ptr_output[x] = (isNull) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+        }
+    }
+
+    /* Send Output */
+    sendImage(imageErosion);
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)

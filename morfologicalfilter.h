@@ -27,9 +27,10 @@ private:
     Ui::MorfologicalFilter *ui;
 
     int **array;
+    int ystart, yend, xstart, xend;
 
     void thresholding();
-    int ystart, yend, xstart, xend;
+    void erosion();
 };
 
 #endif // MORFOLOGICALFILTER_H

@@ -32,10 +32,10 @@ void MorfologicalFilter::on_pbContourExtraction_clicked()
     xend = wallLength - ui->sbX->value();
 
     /* Binarization */
-    thresholding();
+    erosion();
 }
 
-void MorfologicalFilter::thresholding()
+void MorfologicalFilter::binarization()
 {
     int threshold = 150;
     output = QImage(image.width(), image.height(), QImage::Format_RGB32);       //Binarization
@@ -53,13 +53,15 @@ void MorfologicalFilter::thresholding()
 
     /* Send Output */
     //sendImage(output);
-    erosion();
 }
 
 void MorfologicalFilter::erosion()
 {
+    /* Binarization */
+    binarization();
+
+    /* Erosion */
     QImage imageErosion(image.width(), image.height(), QImage::Format_RGB32);
-    //output = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_output = (QRgb*)imageErosion.scanLine(y);
@@ -104,7 +106,35 @@ void MorfologicalFilter::boundaryExtraction(const QImage &imageErosion)
 
 void MorfologicalFilter::thinning()
 {
+    /* Binarization */
+    binarization();
 
+    /* Thinning */
+    QImage imageHitOrMiss(image.width(), image.height(), QImage::Format_RGB32);
+
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
+
+        for (int x = 0; x < image.width(); ++x) {
+
+            bool isNull = false;
+
+            for (int i = ystart; i <= yend; ++i) {
+                int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
+                QRgb *ptr_bin = (QRgb*)output.scanLine(index);
+
+                for (int j = xstart; j <= xend; ++j) {
+                    index = ((x+j) >= image.width()) ? x-j : abs(x+j);
+                    if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) isNull = true;
+                }
+            }
+
+            ptr_output[x] = (!isNull) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+        }
+    }
+
+    /* Send Output */
+    sendImage(imageHitOrMiss);
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)
@@ -144,6 +174,17 @@ void MorfologicalFilter::on_tableWidget_cellClicked(int row, int column)
 //    qDebug() << "";
 }
 
+void MorfologicalFilter::on_pbSkeletonization_clicked()
+{
+    /* Structural Element Offsets */
+    int wallLength = (ui->sbRadius->value() * 2 + 1) - 1;
+    ystart = -ui->sbY->value();
+    yend = wallLength - ui->sbY->value();
+    xstart = -ui->sbX->value();
+    xend = wallLength - ui->sbX->value();
+
+    thinning();
+}
 
 
 

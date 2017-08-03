@@ -22,6 +22,7 @@ private slots:
     void on_pbContourExtraction_clicked();
     void on_sbRadius_valueChanged(int arg1);
     void on_tableWidget_cellClicked(int row, int column);
+    void on_pbSkeletonization_clicked();
 
 private:
     Ui::MorfologicalFilter *ui;
@@ -29,7 +30,7 @@ private:
     int **array;
     int ystart, yend, xstart, xend;
 
-    void thresholding();
+    void binarization();
     void erosion();
     void boundaryExtraction(const QImage &imageErosion);
     void thinning();

@@ -97,13 +97,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3" rowspan="9">
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -146,6 +139,13 @@
      </property>
      <property name="maximum">
       <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4" colspan="4">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -207,10 +207,17 @@
      <column/>
     </widget>
    </item>
-   <item row="3" column="4" colspan="4">
-    <widget class="Line" name="line">
+   <item row="0" column="3" rowspan="10">
+    <widget class="Line" name="line_3">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="2">
+    <widget class="QPushButton" name="pbSkeletonization">
+     <property name="text">
+      <string>Skeletonization</string>
      </property>
     </widget>
    </item>

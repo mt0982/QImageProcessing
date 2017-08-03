@@ -67,7 +67,7 @@
    <item row="8" column="0" colspan="2">
     <widget class="QPushButton" name="pbContourExtraction">
      <property name="text">
-      <string>Contour Extraction</string>
+      <string>Boundary Extraction</string>
      </property>
     </widget>
    </item>

@@ -31,6 +31,8 @@ private:
 
     void thresholding();
     void erosion();
+    void boundaryExtraction(const QImage &imageErosion);
+    void thinning();
 };
 
 #endif // MORFOLOGICALFILTER_H

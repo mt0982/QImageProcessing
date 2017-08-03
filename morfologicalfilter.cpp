@@ -31,7 +31,7 @@ void MorfologicalFilter::on_pbContourExtraction_clicked()
     xstart = -ui->sbX->value();
     xend = wallLength - ui->sbX->value();
 
-    /* Binarization*/
+    /* Binarization */
     thresholding();
 }
 
@@ -82,7 +82,13 @@ void MorfologicalFilter::erosion()
         }
     }
 
-    /* Boundary Extraction */
+    /* Send Output */
+    //sendImage(imageErosion);
+    boundaryExtraction(imageErosion);
+}
+
+void MorfologicalFilter::boundaryExtraction(const QImage &imageErosion)
+{
     QImage extraction = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QRgb *ptr_extraction = (QRgb*)extraction.bits();
     QRgb *ptr_erosion = (QRgb*)imageErosion.bits();
@@ -94,6 +100,11 @@ void MorfologicalFilter::erosion()
 
     /* Send Output */
     sendImage(extraction);
+}
+
+void MorfologicalFilter::thinning()
+{
+
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)

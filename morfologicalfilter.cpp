@@ -134,7 +134,23 @@ void MorfologicalFilter::thinning()
     }
 
     /* Send Output */
-    sendImage(imageHitOrMiss);
+    //sendImage(imageHitOrMiss);
+    skeletonization(imageHitOrMiss);
+}
+
+void MorfologicalFilter::skeletonization(const QImage &imageHitOrMiss)
+{
+    QImage imageSkeletonization = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    QRgb *ptr_skeletonization = (QRgb*)imageSkeletonization.bits();
+    QRgb *ptr_hitOrMis = (QRgb*)imageHitOrMiss.bits();
+    QRgb *ptr_binary = (QRgb*)output.bits();
+
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+        ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
+    }
+
+    /* Send Output */
+    sendImage(imageSkeletonization);
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)

@@ -34,6 +34,7 @@ private:
     void erosion();
     void boundaryExtraction(const QImage &imageErosion);
     void thinning();
+    void skeletonization(const QImage &imageHitOrMiss);
 };
 
 #endif // MORFOLOGICALFILTER_H

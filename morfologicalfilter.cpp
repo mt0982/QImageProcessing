@@ -109,53 +109,69 @@ void MorfologicalFilter::thinning()
     /* Binarization */
     binarization();
 
-    /* Thinning */
-    QImage imageHitOrMiss(image.width(), image.height(), QImage::Format_RGB32);
-
-    for (int y = 0; y < image.height(); ++y) {
-        QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
-
-        for (int x = 0; x < image.width(); ++x) {
-
-            bool isNull = false;
-
-            for (int i = ystart; i <= yend; ++i) {
-                int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
-                QRgb *ptr_bin = (QRgb*)output.scanLine(index);
-
-                for (int j = xstart; j <= xend; ++j) {
-                    index = ((x+j) >= image.width()) ? x-j : abs(x+j);
-                    if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) isNull = true;
-                }
-            }
-
-            ptr_output[x] = (!isNull) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+    /* Structural Element Sum */
+    int structural_sum = 0;
+    for (int i = 0; i < ui->sbRadius->value() * 2 + 1; ++i) {
+        for (int j = 0; j < ui->sbRadius->value() * 2 + 1; ++j) {
+            structural_sum += array[i][j];
         }
     }
 
+    /* Thinning */
+    QImage imageHitOrMiss(image.width(), image.height(), QImage::Format_RGB32);
+    QImage replacedOutput = output;
+
+    for (int kk = 0; kk < 5; ++kk) {
+
+        for (int y = 0; y < image.height(); ++y) {
+            QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
+
+            for (int x = 0; x < image.width(); ++x) {
+
+                int sum = 0;
+
+                for (int i = ystart; i <= yend; ++i) {
+                    int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
+                    QRgb *ptr_bin = (QRgb*)replacedOutput.scanLine(index);
+
+                    for (int j = xstart; j <= xend; ++j) {
+                        index = ((x+j) >= image.width()) ? x-j : abs(x+j);
+                        if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) {
+                            sum++;
+                        }
+                    }
+                }
+
+                ptr_output[x] = (structural_sum != sum) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+            }
+        }
+
+        replacedOutput = imageHitOrMiss;
+        sendImage(imageHitOrMiss);
+    }
+
     /* Send Output */
-    //sendImage(imageHitOrMiss);
-    skeletonization(imageHitOrMiss);
+    //skeletonization(imageHitOrMiss);
 }
 
 void MorfologicalFilter::skeletonization(const QImage &imageHitOrMiss)
 {
-    QImage imageSkeletonization = QImage(image.width(), image.height(), QImage::Format_RGB32);
-    QRgb *ptr_skeletonization = (QRgb*)imageSkeletonization.bits();
-    QRgb *ptr_hitOrMis = (QRgb*)imageHitOrMiss.bits();
-    QRgb *ptr_binary = (QRgb*)output.bits();
+//    QImage imageSkeletonization = QImage(image.width(), image.height(), QImage::Format_RGB32);
+//    QRgb *ptr_skeletonization = (QRgb*)imageSkeletonization.bits();
+//    QRgb *ptr_hitOrMis = (QRgb*)imageHitOrMiss.bits();
+//    QRgb *ptr_binary = (QRgb*)output.bits();
 
-    for (int time = 0; time < 5; ++time) {
-        for (int i = 0; i < image.width() * image.height(); ++i) {
-            ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
-        }
-        image = imageSkeletonization;
-    }
+//    for (int time = 0; time < 5; ++time) {
+//        for (int i = 0; i < image.width() * image.height(); ++i) {
+//            ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
+//        }
+//        image = imageSkeletonization;
+//    }
 
 
 
-    /* Send Output */
-    sendImage(imageSkeletonization);
+//    /* Send Output */
+//    sendImage(imageSkeletonization);
 }
 
 void MorfologicalFilter::on_sbRadius_valueChanged(int arg1)

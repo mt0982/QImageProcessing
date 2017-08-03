@@ -145,9 +145,14 @@ void MorfologicalFilter::skeletonization(const QImage &imageHitOrMiss)
     QRgb *ptr_hitOrMis = (QRgb*)imageHitOrMiss.bits();
     QRgb *ptr_binary = (QRgb*)output.bits();
 
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-        ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
+    for (int time = 0; time < 5; ++time) {
+        for (int i = 0; i < image.width() * image.height(); ++i) {
+            ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
+        }
+        image = imageSkeletonization;
     }
+
+
 
     /* Send Output */
     sendImage(imageSkeletonization);

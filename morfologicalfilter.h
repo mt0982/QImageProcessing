@@ -7,6 +7,17 @@
 #include <QSpinBox>
 #include <Pattern/facadeimage.h>
 
+class StructuralElement {
+private:
+    QVector<int> data;
+
+public:
+    void operator = (std::initializer_list<int> values) {
+        data = values;
+        qDebug() << data.size();
+    }
+};
+
 namespace Ui {
 class MorfologicalFilter;
 }

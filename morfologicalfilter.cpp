@@ -117,40 +117,58 @@ void MorfologicalFilter::thinning()
         }
     }
 
+    /* Angle Arrays */
+    StructuralElement structuralElement[8];
+    structuralElement[0] = {0, 0, 0, 0, 1, 0, 1, 1, 1}; //0
+    structuralElement[1] = {0, 0, 0, 1, 1, 0, 1, 1, 0}; //45
+    structuralElement[2] = {1, 0, 0, 1, 1, 0, 1, 0, 0}; //90
+    structuralElement[3] = {1, 1, 0, 1, 1, 0, 0, 0, 0}; //135
+    structuralElement[4] = {1, 1, 1, 0, 1, 0, 0, 0, 0}; //180
+    structuralElement[5] = {0, 1, 1, 0, 1, 1, 0, 0, 0}; //225
+    structuralElement[6] = {0, 0, 1, 0, 1, 1, 0, 0, 1}; //270
+    structuralElement[7] = {0, 0, 0, 0, 1, 1, 0, 1, 1}; //315
+
     /* Thinning */
     QImage imageHitOrMiss(image.width(), image.height(), QImage::Format_RGB32);
+    QImage imageSkeletonization = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage replacedOutput = output;
 
-    for (int kk = 0; kk < 5; ++kk) {
+    for (int y = 0; y < image.height(); ++y) {
+        QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
 
-        for (int y = 0; y < image.height(); ++y) {
-            QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
+        for (int x = 0; x < image.width(); ++x) {
 
-            for (int x = 0; x < image.width(); ++x) {
+            int sum = 0;
 
-                int sum = 0;
+            for (int i = ystart; i <= yend; ++i) {
+                int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
+                QRgb *ptr_bin = (QRgb*)replacedOutput.scanLine(index);
 
-                for (int i = ystart; i <= yend; ++i) {
-                    int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
-                    QRgb *ptr_bin = (QRgb*)replacedOutput.scanLine(index);
-
-                    for (int j = xstart; j <= xend; ++j) {
-                        index = ((x+j) >= image.width()) ? x-j : abs(x+j);
-                        if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) {
-                            sum++;
-                        }
+                for (int j = xstart; j <= xend; ++j) {
+                    index = ((x+j) >= image.width()) ? x-j : abs(x+j);
+                    if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) {
+                        sum++;
                     }
                 }
-
-                ptr_output[x] = (structural_sum != sum) ? qRgb(255, 255, 255) : qRgb(0,0,0);
             }
+
+            ptr_output[x] = (structural_sum == sum) ? qRgb(255, 255, 255) : qRgb(0,0,0);
+        }
+
+        /* */
+        QRgb *ptr_skeletonization = (QRgb*)imageSkeletonization.bits();
+        QRgb *ptr_hitOrMis = (QRgb*)imageHitOrMiss.bits();
+        QRgb *ptr_binary = (QRgb*)replacedOutput.bits();
+
+        for (int i = 0; i < image.width() * image.height(); ++i) {
+            ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
         }
 
         replacedOutput = imageHitOrMiss;
-        sendImage(imageHitOrMiss);
     }
 
     /* Send Output */
+    sendImage(imageSkeletonization);
     //skeletonization(imageHitOrMiss);
 }
 

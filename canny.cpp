@@ -8,11 +8,11 @@ Canny::Canny(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Canny)
     gaussUnsharpFilter = new GaussUnsharpFilter;
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(overloadImage(QImage)));
 
-    xSobel = {1,  2,  1,
+    ySobel = {1,  2,  1,
               0,  0,  0,
              -1,- 2, -1};
 
-    ySobel = {-1,  0,  1,
+    xSobel = {-1,  0,  1,
               -2,  0,  2,
               -1,  0,  1};
 }
@@ -41,7 +41,7 @@ void Canny::findPath(QImage &iCanny, int x, int y)
         int offY = y + i;
 
         if (offY < 0 || offY >= image.height())
-            break;
+            continue;
 
         quint8 *ptr_icanny_next = (quint8*)iCanny.scanLine(y + i);
 
@@ -50,10 +50,12 @@ void Canny::findPath(QImage &iCanny, int x, int y)
             int offX = x + j;
 
             if (i == j || offY < 0 || offY >= image.width())
-                break;
+                continue;
 
-            if (ptr_icanny_next[offX] == 127) ptr_icanny_next[offX] = 255;
-            else findPath(iCanny, offX, offY);
+            if (ptr_icanny_next[offX] == 127) {
+                ptr_icanny_next[offX] = 255;
+                findPath(iCanny, offX, offY);
+            }
         }
     }
 }
@@ -110,7 +112,7 @@ void Canny::processImage()
     QImage iNonmaximum = QImage(image.width(), image.height(), image.format());
     for (int y = 0; y < image.height(); y++) {
         int yup = (y < 0) ? y : y - 1;
-        int ydown = (y >= image.height()) ? y : y + 1;
+        int ydown = (y >= image.height() - 1) ? y : y + 1;
 
         quint8 *ptr_igradient = (quint8*)iGradient.scanLine(y);
         quint8 *ptr_igradient_up = (quint8*)iGradient.scanLine(yup);
@@ -170,7 +172,9 @@ void Canny::processImage()
 //    }
 
     /* Send Output */
-    sendImage(iCanny);
+    sendImage(iGradient);
+    sendImage(iDirection);
+    //sendImage(iCanny);
 }
 
 void Canny::overloadImage(QImage value)

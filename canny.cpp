@@ -28,6 +28,36 @@ void Canny::setImage(const QImage &value)
     gaussUnsharpFilter->setImage(value);
 }
 
+void Canny::findPath(QImage &iCanny, int x, int y)
+{
+    int radius = 1;
+
+    quint8 *ptr_icanny = (quint8*)iCanny.scanLine(y);
+
+    if (ptr_icanny[x] != 255) return;
+
+    for (int i = -radius; i <= radius; i++) {
+
+        int offY = y + i;
+
+        if (offY < 0 || offY >= image.height())
+            break;
+
+        quint8 *ptr_icanny_next = (quint8*)iCanny.scanLine(y + i);
+
+        for (int j = -radius; j <= radius; j++) {
+
+            int offX = x + j;
+
+            if (i == j || offY < 0 || offY >= image.width())
+                break;
+
+            if (ptr_icanny_next[offX] == 127) ptr_icanny_next[offX] = 255;
+            else findPath(iCanny, offX, offY);
+        }
+    }
+}
+
 void Canny::processImage()
 {
     int radius = 1;
@@ -115,8 +145,32 @@ void Canny::processImage()
         }
     }
 
-    sendImage(iNonmaximum);
-    sendImage(iGradient);
+    /* Threshold */
+    QImage iThreshold = QImage(image.width(), image.height(), image.format());
+    for (int y = 0; y < image.height(); y++) {
+        quint8 *ptr_ithreshold = (quint8*)iThreshold.scanLine(y);
+        quint8 *ptr_inonmaximum = (quint8*)iNonmaximum.scanLine(y);
+
+        for (int x = 0; x < image.width(); x++) {
+            ptr_ithreshold[x] = (ptr_inonmaximum[x] < tmin) ? 0 : ((ptr_inonmaximum[x] > tmax) ? 255 : 127);
+        }
+    }
+
+    /* Hysteresis */
+    QImage iCanny(iThreshold);
+    for (int y = 0; y < image.height(); y++) {
+        for (int x = 0; x < image.width(); x++) {
+            findPath(iCanny, x, y);
+        }
+    }
+
+//    quint8 *ptr_iCanny = iCanny.bits();
+//    for (int i = 0; i < image.height() * image.height(); i++) {
+//        if (ptr_iCanny[i] == 127) ptr_iCanny[i] = 0;
+//    }
+
+    /* Send Output */
+    sendImage(iCanny);
 }
 
 void Canny::overloadImage(QImage value)
@@ -127,8 +181,8 @@ void Canny::overloadImage(QImage value)
 void Canny::on_pbCalculate_clicked()
 {
 //    radius_gauss = ui->sbRadius->value();
-//    tmin = ui->sbTmin->value();
-//    tmax = ui->sbTmax->value();
+    tmin = ui->sbTmin->value();
+    tmax = ui->sbTmax->value();
     processImage();
 }
 

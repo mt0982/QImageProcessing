@@ -30,6 +30,8 @@ private:
     QVector<int> xSobel, ySobel;
     int radius_gauss, tmin, tmax;
 
+    void findPath(QImage &iCanny, int x, int y);
+
 public slots:
     void overloadImage(QImage value);
 

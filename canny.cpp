@@ -113,7 +113,7 @@ void Canny::processImage()
     /* Nonmaximum supression */
     QImage iNonmaximum = QImage(image.width(), image.height(), image.format());
     for (int y = 0; y < image.height(); y++) {
-        int yup = (y < 0) ? y : y - 1;
+        int yup = (y < 1) ? y : y - 1;
         int ydown = (y >= image.height() - 1) ? y : y + 1;
 
         quint8 *ptr_igradient = (quint8*)iGradient.scanLine(y);
@@ -123,8 +123,8 @@ void Canny::processImage()
         quint8 *ptr_inonmaximum = (quint8*)iNonmaximum.scanLine(y);
 
         for (int x = 0; x < image.width(); x++) {
-            int xleft = (x - 1 < 0) ? 0 : x;
-            int xright = (x + 1 >= image.width() - 1) ? x : x + 1;
+            int xleft = (x < 1) ? 0 : x - 1;
+            int xright = (x >= image.width() - 1) ? x : x + 1;
 
             if (ptr_idirection[x] == 0) {
                 if (ptr_igradient[x] < ptr_igradient[xleft] || ptr_igradient[x] < ptr_igradient[xright])
@@ -176,6 +176,7 @@ void Canny::processImage()
     /* Send Output */
     sendImage(iGradient);
     sendImage(iDirection);
+    sendImage(iNonmaximum);
     //sendImage(iCanny);
 }
 

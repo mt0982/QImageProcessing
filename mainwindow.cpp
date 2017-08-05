@@ -8,11 +8,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     staticFilter = new StaticFilter;
     cannyFilter = new Canny;
     morfologicalFilter = new MorfologicalFilter;
+    houghTransform = new HoughTransform;
 
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(cannyFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
+    connect(houghTransform, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
     QImage image("/home/asus/Obrazy/sheep.png");
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     staticFilter->setImage(image);
     cannyFilter->setImage(image);
     morfologicalFilter->setImage(image);
+    houghTransform->setImage(image);
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +60,11 @@ void MainWindow::on_actionCanny_triggered()
 void MainWindow::on_actionMorfological_triggered()
 {
     morfologicalFilter->show();
+}
+
+void MainWindow::on_actionHough_triggered()
+{
+    houghTransform->show();
 }
 
 

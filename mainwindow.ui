@@ -47,6 +47,7 @@
     <addaction name="actionStatic_Min_Max_Median"/>
     <addaction name="actionCanny"/>
     <addaction name="actionMorfological"/>
+    <addaction name="actionHough"/>
    </widget>
    <addaction name="menuFilters"/>
   </widget>
@@ -68,6 +69,11 @@
   <action name="actionMorfological">
    <property name="text">
     <string>Morfological</string>
+   </property>
+  </action>
+  <action name="actionHough">
+   <property name="text">
+    <string>Hough</string>
    </property>
   </action>
  </widget>

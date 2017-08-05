@@ -2,6 +2,7 @@
 #define FACADEIMAGE_H
 
 #include <QWidget>
+#include <QDebug>
 
 class FacadeImage : public QWidget {
     Q_OBJECT

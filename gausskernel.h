@@ -2,7 +2,6 @@
 #define GAUSSKERNEL_H
 
 #include <QWidget>
-#include <QDebug>
 #include <Pattern/facadeimage.h>
 
 namespace Ui {

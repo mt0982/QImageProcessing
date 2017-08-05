@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(houghTransform, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
-    QImage image("/home/asus/Obrazy/sheep.png");
+    QImage image("/home/asus/Obrazy/lena.png");
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
 
     gaussUnsharpFilter->setImage(image);
@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setImage(QImage image)
+void MainWindow::setImage(const QImage &image)
 {
     qDebug() << "MainWindow::setImage(QImage image)";
     //ui->labelImage->setPixmap(QPixmap::fromImage(image));

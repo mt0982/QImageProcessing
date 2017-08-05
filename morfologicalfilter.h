@@ -2,7 +2,6 @@
 #define MORFOLOGICALFILTER_H
 
 #include <QWidget>
-#include <QDebug>
 #include <QTableWidget>
 #include <QSpinBox>
 #include <Pattern/facadeimage.h>

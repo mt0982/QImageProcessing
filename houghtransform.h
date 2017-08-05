@@ -15,8 +15,13 @@ public:
     explicit HoughTransform(FacadeImage *parent = 0);
     ~HoughTransform();
 
+private slots:
+    void on_pbCalculate_clicked();
+
 private:
     Ui::HoughTransform *ui;
+
+    float **accumulator;
 };
 
 #endif // HOUGHTRANSFORM_H

@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QImage>
-#include <QDebug>
 #include <QLabel>
 #include <QtMath>
 #include <QQueue>

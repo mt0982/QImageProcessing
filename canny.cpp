@@ -75,19 +75,19 @@ void Canny::processImage()
         quint8 *ptr_image_up = (y < 1) ? ptr_image : ptr_image - image.width();
         quint8 *ptr_image_down = (y >= image.height() - 1) ? ptr_image : ptr_image + image.width();
 
-        /* Static Radius = 1 */
         for (int x = 0; x < image.width(); x++) {
             int xleft = (x < 1) ? x : x - 1;
             int xright = (x >= image.width() - 1) ? x : x + 1;
 
-            int gradX = ptr_image_up[xright]
+            /* Static Radius = 1 */
+            double gradX = ptr_image_up[xright]
                       + 2 * ptr_image[xright]
                       + ptr_image_down[xright]
                       - ptr_image_up[xleft]
                       - 2 * ptr_image[xleft]
                       - ptr_image_down[xleft];
 
-            int gradY = ptr_image_up[xleft]
+            double gradY = ptr_image_up[xleft]
                       + 2 * ptr_image_up[x]
                       + ptr_image_up[xright]
                       - ptr_image_down[xleft]
@@ -100,7 +100,7 @@ void Canny::processImage()
             if (gradX == 0 && gradY == 0) ptr_idirection[x] = 0;
             else if (gradX == 0) ptr_idirection[x] = 135;
             else {
-                float angle = 180.0f * atan(gradY / gradX) / M_PI;
+                double angle = 180.0f * atan(gradY / gradX) / M_PI;
 
                 if (angle >= -22.5 && angle < 22.5) ptr_idirection[x] = 0;
                 else if (angle >= 22.5 && angle < 67.5) ptr_idirection[x] = 45;
@@ -175,8 +175,8 @@ void Canny::processImage()
 
     /* Send Output */
     sendImage(iGradient);
-    //sendImage(iDirection);
-    sendImage(iCanny);
+    sendImage(iDirection);
+    //sendImage(iCanny);
 }
 
 void Canny::overloadImage(QImage value)

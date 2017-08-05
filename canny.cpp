@@ -76,7 +76,47 @@ void Canny::processImage()
         }
     }
 
-    sendImage(iDirection);
+    /* Nonmaximum supression */
+    QImage iNonmaximum = QImage(image.width(), image.height(), image.format());
+    for (int y = 0; y < image.height(); y++) {
+        int yup = (y < 0) ? y : y - 1;
+        int ydown = (y >= image.height()) ? y : y + 1;
+
+        quint8 *ptr_igradient = (quint8*)iGradient.scanLine(y);
+        quint8 *ptr_igradient_up = (quint8*)iGradient.scanLine(yup);
+        quint8 *ptr_igradient_down = (quint8*)iGradient.scanLine(ydown);
+        quint8 *ptr_idirection = (quint8*)iDirection.scanLine(y);
+        quint8 *ptr_inonmaximum = (quint8*)iNonmaximum.scanLine(y);
+
+        for (int x = 0; x < image.width(); x++) {
+            int xleft = (x - 1 < 0) ? 0 : x;
+            int xright = (x + 1 >= image.width() - 1) ? x : x + 1;
+
+            if (ptr_idirection[x] == 0) {
+                if (ptr_igradient[x] < ptr_igradient[xleft] || ptr_igradient[x] < ptr_igradient[xright])
+                    ptr_inonmaximum[x] = 0;
+                else ptr_inonmaximum[x] = ptr_igradient[x];
+            }
+            else if (ptr_idirection[x] == 45) {
+                if (ptr_igradient[x] < ptr_igradient_up[xright] || ptr_igradient[x] < ptr_igradient_down[xleft])
+                    ptr_inonmaximum[x] = 0;
+                else ptr_inonmaximum[x] = ptr_igradient[x];
+            }
+            else if (ptr_idirection[x] == 135) {
+                if (ptr_igradient[x] < ptr_igradient_up[xleft] || ptr_igradient[x] < ptr_igradient_down[xright])
+                    ptr_inonmaximum[x] = 0;
+                else ptr_inonmaximum[x] = ptr_igradient[x];
+            }
+            else {
+                if (ptr_igradient[x] < ptr_igradient_up[x] || ptr_igradient[x] < ptr_igradient_down[x])
+                    ptr_inonmaximum[x] = 0;
+                else ptr_inonmaximum[x] = ptr_igradient[x];
+            }
+        }
+    }
+
+    sendImage(iNonmaximum);
+    sendImage(iGradient);
 }
 
 void Canny::overloadImage(QImage value)

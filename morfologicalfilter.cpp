@@ -133,26 +133,37 @@ void MorfologicalFilter::thinning()
     QImage imageSkeletonization = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QImage replacedOutput = output;
 
-    for (int y = 0; y < image.height(); ++y) {
-        QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
+    /* While Is Different */
+    //for (int pp = 0; pp < 5; ++pp) {
+        //qDebug() << pp;
 
-        for (int x = 0; x < image.width(); ++x) {
+        /* Foreach Angle */
+        for (int kk = 0; kk < 8; ++kk) {
 
-            int sum = 0;
+            for (int y = 0; y < image.height(); ++y) {
+                QRgb *ptr_output = (QRgb*)imageHitOrMiss.scanLine(y);
 
-            for (int i = ystart; i <= yend; ++i) {
-                int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
-                QRgb *ptr_bin = (QRgb*)replacedOutput.scanLine(index);
+                for (int x = 0; x < image.width(); ++x) {
 
-                for (int j = xstart; j <= xend; ++j) {
-                    index = ((x+j) >= image.width()) ? x-j : abs(x+j);
-                    if ((array[i + abs(ystart)][j + abs(xstart)] == 1) && (qGray(ptr_bin[index]) == 0)) {
-                        sum++;
+                    int sum = 0;
+                    int structuralIndex = 0;
+
+                    for (int i = ystart; i <= yend; ++i) {
+                        int index = ((y+i) >= image.height()) ? y-i : abs(y+i);
+                        QRgb *ptr_bin = (QRgb*)replacedOutput.scanLine(index);
+
+                        for (int j = xstart; j <= xend; ++j) {
+                            index = ((x+j) >= image.width()) ? x-j : abs(x+j);
+                            if ((qGray(ptr_bin[index]) == 0) && structuralElement[kk].data[structuralIndex]) {
+                                sum++;
+                            }
+                            structuralIndex++;
+                        }
                     }
+
+                    ptr_output[x] = (sum == 4) ? qRgb(255, 255, 255) : qRgb(0,0,0);
                 }
             }
-
-            ptr_output[x] = (structural_sum == sum) ? qRgb(255, 255, 255) : qRgb(0,0,0);
         }
 
         /* */
@@ -164,8 +175,8 @@ void MorfologicalFilter::thinning()
             ptr_skeletonization[i] = ptr_binary[i] - ptr_hitOrMis[i];
         }
 
-        replacedOutput = imageHitOrMiss;
-    }
+        //replacedOutput = imageSkeletonization;
+    //}
 
     /* Send Output */
     sendImage(imageSkeletonization);
@@ -232,17 +243,13 @@ void MorfologicalFilter::on_tableWidget_cellClicked(int row, int column)
 void MorfologicalFilter::on_pbSkeletonization_clicked()
 {
     /* Structural Element Offsets */
-    int wallLength = (ui->sbRadius->value() * 2 + 1) - 1;
-    ystart = -ui->sbY->value();
-    yend = wallLength - ui->sbY->value();
-    xstart = -ui->sbX->value();
-    xend = wallLength - ui->sbX->value();
+    ystart = -1;
+    yend = 1;
+    xstart = -1;
+    xend = 1;
 
     thinning();
 }
-
-
-
 
 
 

@@ -62,6 +62,9 @@ void Canny::findPath(QImage &iCanny, int x, int y)
 
 void Canny::processImage()
 {
+    /* Gauss */
+    gaussUnsharpFilter->gaussianFilterFastCanny(radius_gauss, 1);
+
     /* Gradient & Direction */
     image = image.convertToFormat(QImage::Format_Grayscale8);
     QImage iGradient = QImage(image.width(), image.height(), image.format());
@@ -81,18 +84,18 @@ void Canny::processImage()
 
             /* Static Radius = 1 */
             double gradX = ptr_image_up[xright]
-                      + 2 * ptr_image[xright]
-                      + ptr_image_down[xright]
-                      - ptr_image_up[xleft]
-                      - 2 * ptr_image[xleft]
-                      - ptr_image_down[xleft];
+                    + 2 * ptr_image[xright]
+                    + ptr_image_down[xright]
+                    - ptr_image_up[xleft]
+                    - 2 * ptr_image[xleft]
+                    - ptr_image_down[xleft];
 
             double gradY = ptr_image_up[xleft]
-                      + 2 * ptr_image_up[x]
-                      + ptr_image_up[xright]
-                      - ptr_image_down[xleft]
-                      - 2 * ptr_image_down[x]
-                      - ptr_image_down[xright];
+                    + 2 * ptr_image_up[x]
+                    + ptr_image_up[xright]
+                    - ptr_image_down[xleft]
+                    - 2 * ptr_image_down[x]
+                    - ptr_image_down[xright];
 
             ptr_igradient[x] = qAbs(gradX) + qAbs(gradY);
 
@@ -117,8 +120,8 @@ void Canny::processImage()
         int ydown = (y >= image.height() - 1) ? y : y + 1;
 
         quint8 *ptr_igradient = (quint8*)iGradient.scanLine(y);
-        quint8 *ptr_image_up = (quint8*)iGradient.scanLine(yup);
-        quint8 *ptr_image_down = (quint8*)iGradient.scanLine(ydown);
+        quint8 *ptr_igradient_up = (quint8*)iGradient.scanLine(yup);
+        quint8 *ptr_igradient_down = (quint8*)iGradient.scanLine(ydown);
         quint8 *ptr_idirection = (quint8*)iDirection.scanLine(y);
         quint8 *ptr_inonmaximum = (quint8*)iNonmaximum.scanLine(y);
 
@@ -132,17 +135,17 @@ void Canny::processImage()
                 else ptr_inonmaximum[x] = ptr_igradient[x];
             }
             else if (ptr_idirection[x] == 45) {
-                if (ptr_igradient[x] < ptr_image_up[xright] || ptr_igradient[x] < ptr_image_down[xleft])
+                if (ptr_igradient[x] < ptr_igradient_up[xright] || ptr_igradient[x] < ptr_igradient_down[xleft])
                     ptr_inonmaximum[x] = 0;
                 else ptr_inonmaximum[x] = ptr_igradient[x];
             }
             else if (ptr_idirection[x] == 135) {
-                if (ptr_igradient[x] < ptr_image_up[xleft] || ptr_igradient[x] < ptr_image_down[xright])
+                if (ptr_igradient[x] < ptr_igradient_up[xleft] || ptr_igradient[x] < ptr_igradient_down[xright])
                     ptr_inonmaximum[x] = 0;
                 else ptr_inonmaximum[x] = ptr_igradient[x];
             }
             else {
-                if (ptr_igradient[x] < ptr_image_up[x] || ptr_igradient[x] < ptr_image_down[x])
+                if (ptr_igradient[x] < ptr_igradient_up[x] || ptr_igradient[x] < ptr_igradient_down[x])
                     ptr_inonmaximum[x] = 0;
                 else ptr_inonmaximum[x] = ptr_igradient[x];
             }
@@ -174,10 +177,11 @@ void Canny::processImage()
     }
 
     /* Send Output */
-    sendImage(iGradient);
-    sendImage(iDirection);
-    sendImage(iNonmaximum);
-    //sendImage(iCanny);
+    //sendImage(iGradient);
+    //sendImage(iDirection);
+    //sendImage(iNonmaximum);
+    //sendImage(iThreshold);
+    sendImage(iCanny);
 }
 
 void Canny::overloadImage(QImage value)
@@ -187,7 +191,7 @@ void Canny::overloadImage(QImage value)
 
 void Canny::on_pbCalculate_clicked()
 {
-//    radius_gauss = ui->sbRadius->value();
+    radius_gauss = ui->sbRadius->value();
     tmin = ui->sbTmin->value();
     tmax = ui->sbTmax->value();
     processImage();

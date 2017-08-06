@@ -28,6 +28,14 @@ void Canny::setImage(const QImage &value)
     gaussUnsharpFilter->setImage(value);
 }
 
+void Canny::processImage(int radius, int tmin, int tmax)
+{
+    this->radius_gauss = radius;
+    this->tmin = tmin;
+    this->tmax = tmax;
+    processImage();
+}
+
 void Canny::findPath(QImage &iCanny, int x, int y)
 {
     int radius = 1;

@@ -4,6 +4,11 @@
 HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::HoughTransform)
 {
     ui->setupUi(this);
+
+    canny = new Canny;
+    connect(canny, &Canny::sendImage, [this](const QImage &value) {
+        image = value;
+    });
 }
 
 HoughTransform::~HoughTransform()
@@ -13,6 +18,11 @@ HoughTransform::~HoughTransform()
 
 void HoughTransform::on_pbCalculate_clicked()
 {
+    /* Detect Edges */
+    canny->setImage(image);
+    canny->processImage(1, 55, 100);
+    sendImage(image);
+
     /* Accumulator */
     int rows = floor(sqrt(pow(image.width(), 2) + pow(image.height(), 2)));     //rows = max(diagonal)
     accumulator = new float*[rows];

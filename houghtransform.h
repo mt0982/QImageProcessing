@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "Pattern/facadeimage.h"
+#include "canny.h"
 
 namespace Ui {
 class HoughTransform;
@@ -22,6 +23,7 @@ private:
     Ui::HoughTransform *ui;
 
     float **accumulator;
+    Canny *canny;
 };
 
 #endif // HOUGHTRANSFORM_H

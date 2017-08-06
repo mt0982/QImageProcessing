@@ -21,6 +21,7 @@ public:
     ~Canny();
 
     void processImage();
+    void processImage(int radius, int tmin, int tmax);
     void setImage(const QImage &value);
 
 private:

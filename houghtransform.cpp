@@ -50,7 +50,28 @@ void HoughTransform::on_pbCalculate_clicked()
             }
         }
     }
-    /* */
+
+    /* Normalize */
+    int mmax = 0;
+    for (int y = 0; y < 2 * height; ++y) {
+        for (int x = 0; x < 180; ++x) {
+            if (accumulator[y][x] > mmax)
+                mmax = accumulator[y][x];
+        }
+    }
+
+    float norm = 255.0f / mmax;
+    QImage iAccumulatoNormalized(iAccumulator);
+    iAccumulatoNormalized.fill(0);
+
+    for (int y = 0; y < height * 2; ++y) {
+        quint8 *ptr_iaccumulator = iAccumulatoNormalized.scanLine(y);
+        for (int x = 0; x < 180; ++x) {
+            ptr_iaccumulator[x] = accumulator[y][x] * norm;
+        }
+    }
+
+    /* Draw Lines */
     QPainter iPainter(&iOutput);
     iPainter.setPen(QPen(QColor(200, 0, 0, 100), 1));
 
@@ -108,46 +129,11 @@ void HoughTransform::on_pbCalculate_clicked()
         }
     }
 
-//    int maxima = 0;
-//    QVector<QVector3D> sortedArray;
-//    for (int r = 0; r < iAccumulator.height(); ++r) {
-//        for (int m = 0; m < iAccumulator.width(); ++m) {
-//            if (accumulator[r][m] > maxima)
-//                maxima = accumulator[r][m];
-
-//            int count = accumulator[r][m];
-//            sortedArray.push_back(QVector3D(count, r, m));
-//        }
-//    }
-
-//    std::sort(sortedArray.begin(), sortedArray.end(), [](const QVector3D &a, const QVector3D &b)->bool{
-//        return a.x() > b.x();
-//    });
-
-//    qDebug() << maxima;
-
-//    /* */
-//    QPainter iPainter(&iOutput);
-//    iPainter.setPen(QPen(QColor(200, 0, 0, 100), 1));
-
-//    for (int i = 0; i < 100; i++) {
-
-//        float rho = sortedArray[i][1], theta = sortedArray[i][2] - 90;
-//        double a = cos(theta), b = sin(theta);
-//        double x0 = a*rho, y0 = b*rho;
-
-//        int p1x = round(x0 + 1000 * (-b));
-//        int p1y = round(y0 + 1000 * (a));
-//        int p2x = round(x0 - 1000 * (-b));
-//        int p2y = round(y0 - 1000 * (a));
-//        iPainter.drawLine(p1x, p1y, p2x, p2y);
-
-//        qDebug() << p1x << p1y << p2x << p2y;
-//    }
-
     iAccumulator = iAccumulator.scaled(image.width(), image.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    sendImage(iAccumulator);
-
+    iAccumulatoNormalized = iAccumulatoNormalized.scaled(image.width(), image.height(),
+                                                         Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    sendImage(iAccumulatoNormalized);
+    //sendImage(iAccumulator);
     sendImage(iOutput);
     //sendImage(image);
 }

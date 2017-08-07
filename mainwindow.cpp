@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(houghTransform, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
 
-    QImage image("/home/asus/Obrazy/lenaNoise.png");
+    QImage image("/home/asus/Obrazy/fence.png");
     ui->labelImage->setPixmap(QPixmap::fromImage(image));
 
     gaussUnsharpFilter->setImage(image);

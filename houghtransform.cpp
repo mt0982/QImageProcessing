@@ -28,6 +28,7 @@ void HoughTransform::on_pbCalculate_clicked()
     QImage iAccumulator(180, 2 * height, QImage::Format_Grayscale8);                //-R < height < R, R = diagonal
     iAccumulator.fill(0);
 
+    QVector<QPoint> lines;
     for (int y = 0; y < image.height(); ++y) {
 
         quint8 *ptr_image = image.scanLine(y);
@@ -35,11 +36,14 @@ void HoughTransform::on_pbCalculate_clicked()
         for (int x = 0; x < image.width(); ++x) {
 
             if (ptr_image[x] != 0) {
-                for (int m = 0; m < 180 * 3; m++) {
+                for (int m = 0; m <= 360; m++) {
                     int r = (int)(x * cos((m * M_PI) / 180) + y * sin((m * M_PI) / 180));
                     if (r + height > 0) {
                         quint8 *ptr_iaccumulator = iAccumulator.scanLine(r + height);
                         ptr_iaccumulator[m] += (ptr_iaccumulator[m] + 1 < 255) ? 1 : 0;
+
+                        if (ptr_iaccumulator[m] > 220 && !lines.contains(QPoint(r, m)))
+                            lines.push_back(QPoint(r, m));
                     }
                 }
             }
@@ -49,39 +53,23 @@ void HoughTransform::on_pbCalculate_clicked()
     iAccumulator = iAccumulator.scaled(image.width(), image.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     sendImage(iAccumulator);
 
-//    /* */
-//    for (int y = 0; y < image.height(); ++y) {
+    /* */
+    QPainter iPainter(&iOutput);
+    QBrush iBrush(Qt::red);
+    iPainter.setBrush(iBrush);
 
-//        quint8 *ptr_iaccumulator = iAccumulator.scanLine(y);
-//        quint8 *ptr_ioutput = iOutput.scanLine(y);
+    for (int i = 0; i < lines.size(); ++i) {
+        float rho = lines[i].rx(), theta = lines[i].ry();
+        QPoint pt1, pt2;
+        double a = cos(theta), b = sin(theta);
+        double x0 = a*rho, y0 = b*rho;
+        pt1 = QPoint((x0 + 1000*(-b)), (y0 + 1000*(a)));
+        pt2 = QPoint((x0 - 1000*(-b)), (y0 - 1000*(a)));
+        iPainter.drawLine(pt1, pt2);
+    }
 
-//        for (int x = 0; x < image.width(); ++x) {
-
-//            if (ptr_iaccumulator[x] > 240)
-//                ptr_ioutput[x] = qRgb(255,255,255);
-//        }
-//    }
-
-//    sendImage(iOutput);
-
-//    for (int i = 0; i < rows; ++i) {
-//        for (int j = 0; j < 180; ++j) {
-//            accumulator[i][j] =
-//        }
-//    }
-
-//    /* */
-//    for (int y = 0; y < image.height(); ++y) {
-
-//        for (int x = 0; x < image.width(); ++x) {
-
-//            double angle = atan2(y, x) * double(180/M_PI);          //0 < angle < PI
-//            double distance = x * cos(angle) + y * sin(angle);      //-R < p < R, R = diagonal
-//            //qDebug() << angle;
-
-
-//        }
-//    }
+    sendImage(iOutput);
+    sendImage(image);
 }
 
 

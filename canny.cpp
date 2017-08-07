@@ -180,7 +180,7 @@ void Canny::processImage()
     }
 
     quint8 *ptr_iCanny = iCanny.bits();
-    for (int i = 0; i < image.height() * image.height(); i++) {
+    for (int i = 0; i < image.height() * image.width(); i++) {
         if (ptr_iCanny[i] == 127) ptr_iCanny[i] = 0;
     }
 

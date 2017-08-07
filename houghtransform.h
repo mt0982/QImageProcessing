@@ -2,6 +2,7 @@
 #define HOUGHTRANSFORM_H
 
 #include <QWidget>
+#include <QPainter>
 #include "Pattern/facadeimage.h"
 #include "canny.h"
 

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QVector3D>
 #include "Pattern/facadeimage.h"
 #include "canny.h"
 
@@ -25,6 +26,25 @@ private:
 
     float **accumulator;
     Canny *canny;
+
 };
 
 #endif // HOUGHTRANSFORM_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

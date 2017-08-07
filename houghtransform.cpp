@@ -40,12 +40,12 @@ void HoughTransform::on_pbCalculate_clicked()
             if (ptr_image[x] != 0) {
                 for (int m = 0; m < 180; m++) {
 
-                    int r = (x - image.width() / 2) * cos((m * M_PI) / 180) + (y - image.height() / 2)
-                                  * sin((m * M_PI) / 180);
+                    float angle = (m * M_PI) / 180;
+                    float r = (x - image.width() / 2) * cos(angle) + (y - image.height() / 2) * sin(angle);
 
                     quint8 *ptr_iaccumulator = iAccumulator.scanLine(r + height);
                     ptr_iaccumulator[m] += (ptr_iaccumulator[m] + 1 < 255) ? 1 : 0;
-                    accumulator[r + height][m]++;
+                    accumulator[(int)round(r + height)][m]++;
                 }
             }
         }
@@ -65,8 +65,8 @@ void HoughTransform::on_pbCalculate_clicked()
 
                     for (int ly = -4; ly <= 4; ly++) {
 
-                        if ((x + lx > 0) && (x + lx < iAccumulator.width())) {
-                            if ((y + ly > 0) && (y + ly < iAccumulator.height())) {
+                        if ((x + lx >= 0) && (x + lx < iAccumulator.width())) {
+                            if ((y + ly >= 0) && (y + ly < iAccumulator.height())) {
 
                                 if (accumulator[y + ly][x + lx] > mmax) {
                                     mmax = accumulator[y + ly][x + lx];

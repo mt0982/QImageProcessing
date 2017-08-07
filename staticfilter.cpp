@@ -175,7 +175,11 @@ void StaticFilter::on_pbAdaptiveMedian_clicked()
     int radius_max = ui->sbRadiusMax->value(), med;
     bool ended;
     QVector<int> mvec;
-    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    if (output.isNull()) {
+        output = QImage(image.width(), image.height(), QImage::Format_RGB32);
+    } else {
+        output.fill(QColor(0,0,0));     //color bug fixed
+    }
 
     for (int y = 0; y < image.height(); ++y) {
         QRgb *ptr_input = (QRgb*)image.scanLine(y);

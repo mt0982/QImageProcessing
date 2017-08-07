@@ -37,7 +37,7 @@ void MainWindow::setImage(const QImage &image)
     //ui->labelImage->setPixmap(QPixmap::fromImage(image));
 
     /* It's necessay, fix some color problems */
-    outputWindow = new QLabel;
+    if (!outputWindow) outputWindow = new QLabel;
     outputWindow->setPixmap(QPixmap::fromImage(image));
     outputWindow->show();
 }

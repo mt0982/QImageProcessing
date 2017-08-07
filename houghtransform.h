@@ -26,6 +26,9 @@ private:
 
     float **accumulator;
     Canny *canny;
+    QImage iOriginal;
+    QLabel *windowAccumulator;
+    bool flag;
 
 };
 

@@ -1,7 +1,8 @@
 #include "houghtransform.h"
 #include "ui_houghtransform.h"
 
-HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::HoughTransform)
+HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::HoughTransform), flag(false),
+    windowAccumulator(NULL)
 {
     ui->setupUi(this);
 
@@ -19,9 +20,14 @@ HoughTransform::~HoughTransform()
 void HoughTransform::on_pbCalculate_clicked()
 {
     /* Detect Edges - Canny */
-    QImage iOutput(image);
-    canny->setImage(image);
-    canny->processImage(3, 100, 150);
+    if (!flag) {
+        iOriginal = image;
+        canny->setImage(image);
+        canny->processImage(3, 100, 150);
+        flag = true;
+    }
+
+    QImage iOutput(iOriginal);
 
     /* Accumulato */
     int height = floor(sqrt(pow(image.width(), 2) + pow(image.height(), 2)));       //rows = max(diagonal)
@@ -79,7 +85,7 @@ void HoughTransform::on_pbCalculate_clicked()
 
         for (int x = 0; x < iAccumulator.width(); ++x) {
 
-            if (accumulator[y][x] > 175) {
+            if (accumulator[y][x] > ui->sbThreshold->value()) {
 
                 int mmax = accumulator[y][x];
                 for (int lx = -4; lx <= 4; lx++) {
@@ -132,10 +138,14 @@ void HoughTransform::on_pbCalculate_clicked()
     iAccumulator = iAccumulator.scaled(image.width(), image.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     iAccumulatoNormalized = iAccumulatoNormalized.scaled(image.width(), image.height(),
                                                          Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    sendImage(iAccumulatoNormalized);
+    //sendImage(iAccumulatoNormalized);
     //sendImage(iAccumulator);
     sendImage(iOutput);
     //sendImage(image);
+
+    if(!windowAccumulator) windowAccumulator = new QLabel;
+    windowAccumulator->setPixmap(QPixmap::fromImage(iAccumulatoNormalized));
+    windowAccumulator->show();
 }
 
 

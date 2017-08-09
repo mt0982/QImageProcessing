@@ -175,13 +175,10 @@ void MorfologicalFilter::skeletonization()
     /* Skeletonization */
     QImage after, before;
     after = thinning(iBinary);
-    int counter = 0;
 
     while (before != after) {
         before = iBinary;
         after = thinning(iBinary);
-        qDebug() << counter;
-        counter++;
     }
 
     /* Send Output */

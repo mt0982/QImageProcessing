@@ -36,12 +36,13 @@ private:
 
     int **array;
     int ystart, yend, xstart, xend;
+    QImage iBinary;
 
     void binarization();
     void erosion();
     void boundaryExtraction(const QImage &imageErosion);
-    void thinning();
-    void skeletonization(const QImage &imageHitOrMiss);
+    QImage thinning(QImage &input);
+    void skeletonization();
 };
 
 #endif // MORFOLOGICALFILTER_H

@@ -23,6 +23,7 @@ private:
     Ui::FFTW *ui;
 
     void spectrum();
+    QImage swap(QImage &input);
 };
 
 #endif // FFTW_H

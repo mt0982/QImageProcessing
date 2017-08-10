@@ -48,7 +48,7 @@ void FFTW::spectrum()
     fftw_execute(plan_green);
     fftw_execute(plan_blue);
 
-    /* Visualisation */
+    /* Alloc Output */
     output = QImage(image.width(), image.height(), QImage::Format_RGB32);
     QRgb *ptr_output = (QRgb*)output.bits();
 
@@ -60,13 +60,17 @@ void FFTW::spectrum()
                                 log(abs(output_green[i][REALIS]) + 1),
                                 log(abs(output_blue[i][REALIS]) + 1));
 
-        //qDebug() << color;
-
         maximumFromRealis = QColor(qMax(maximumFromRealis.red(), crealis.red()),
                                    qMax(maximumFromRealis.green(), crealis.green()),
                                    qMax(maximumFromRealis.blue(), crealis.blue()));
     }
 
+    /* Normalize */
+    maximumFromRealis = QColor(255 / maximumFromRealis.red(),
+                               255 / maximumFromRealis.green(),
+                               255 / maximumFromRealis.blue());
+
+    /* Visualisation */
     for (int i = 0; i < image.width() * image.height(); ++i) {
 
         QColor crealis = QColor(log(abs(output_red[i][REALIS]) + 1) * maximumFromRealis.red(),
@@ -76,8 +80,24 @@ void FFTW::spectrum()
         ptr_output[i] = qRgb(crealis.red(), crealis.green(), crealis.blue());
     }
 
+    sendImage(swap(output));
+}
 
-    sendImage(output);
+QImage FFTW::swap(QImage &input)
+{
+    /* Quarter: I <-> III, II <-> IV */
+    for (int y = 0; y < input.height() / 2; ++y) {
+        QRgb *first = (QRgb*)input.scanLine(y);
+        QRgb *second = (QRgb*)input.scanLine(y + image.height() / 2);
+
+        for (int x = 0; x < input.width() / 2; ++x) {
+
+            qSwap(first[x], second[x + input.width() / 2]);
+            qSwap(first[x + input.width() / 2], second[x]);
+        }
+    }
+
+    return input;
 }
 
 void FFTW::on_pbCalculate_clicked()

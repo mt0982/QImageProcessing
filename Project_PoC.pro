@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Project_PoC
 TEMPLATE = app
 
+LIBS += -lfftw3
 
 SOURCES += main.cpp\
         mainwindow.cpp \

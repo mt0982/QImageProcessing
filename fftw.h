@@ -16,8 +16,42 @@ public:
     explicit FFTW(FacadeImage *parent = 0);
     ~FFTW();
 
+private slots:
+    void on_pbCalculate_clicked();
+
 private:
     Ui::FFTW *ui;
+
+    void spectrum();
 };
 
 #endif // FFTW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     canny.cpp \
     morfologicalfilter.cpp \
     Pattern/facadeimage.cpp \
-    houghtransform.cpp
+    houghtransform.cpp \
+    fftw.cpp
 
 HEADERS  += mainwindow.h \
     gausskernel.h \
@@ -27,11 +28,13 @@ HEADERS  += mainwindow.h \
     canny.h \
     morfologicalfilter.h \
     Pattern/facadeimage.h \
-    houghtransform.h
+    houghtransform.h \
+    fftw.h
 
 FORMS    += mainwindow.ui \
     gausskernel.ui \
     staticfilter.ui \
     canny.ui \
     morfologicalfilter.ui \
-    houghtransform.ui
+    houghtransform.ui \
+    fftw.ui

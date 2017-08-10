@@ -48,6 +48,7 @@
     <addaction name="actionCanny"/>
     <addaction name="actionMorfological"/>
     <addaction name="actionHough"/>
+    <addaction name="actionFFTW_Convolution"/>
    </widget>
    <addaction name="menuFilters"/>
   </widget>
@@ -74,6 +75,11 @@
   <action name="actionHough">
    <property name="text">
     <string>Hough</string>
+   </property>
+  </action>
+  <action name="actionFFTW_Convolution">
+   <property name="text">
+    <string>FFTW Convolution</string>
    </property>
   </action>
  </widget>

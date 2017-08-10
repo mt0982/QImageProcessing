@@ -11,6 +11,7 @@
 #include "morfologicalfilter.h"
 #include "canny.h"
 #include "houghtransform.h"
+#include "fftw.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,8 +30,8 @@ private slots:
     void on_actionStatic_Min_Max_Median_triggered();
     void on_actionCanny_triggered();
     void on_actionMorfological_triggered();
-
     void on_actionHough_triggered();
+    void on_actionFFTW_Convolution_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -40,6 +41,7 @@ private:
     Canny *cannyFilter;
     MorfologicalFilter *morfologicalFilter;
     HoughTransform *houghTransform;
+    FFTW *fftwConvolution;
     QLabel *outputWindow;
 };
 

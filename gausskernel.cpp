@@ -54,7 +54,7 @@ void GaussUnsharpFilter::on_leSigma_textChanged(const QString &arg1)
     QTableWidgetItem *item;
 
     for (int x = 0; x < ui->tableGauss->rowCount(); ++x) {
-        for (int y = 0; y < ui->tableGauss->colorCount(); ++y) {
+        for (int y = 0; y < ui->tableGauss->columnCount(); ++y) {
 
             float value = exp(-(pow(x - radius,2) + pow(y - radius,2)) / (2 * pow(sigma,2)));
             int value_int = value * 100;

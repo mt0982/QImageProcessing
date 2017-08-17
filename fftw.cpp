@@ -7,6 +7,22 @@
 FFTW::FFTW(FacadeImage *parent): FacadeImage(parent), ui(new Ui::FFTW)
 {
     ui->setupUi(this);
+
+    /* Connect, SpinBox Value Changed, Cast Is Neccessary */
+    connect(ui->sbRadius, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &radius) {
+        ui->tableWidget->setRowCount(radius * 2 + 1);
+        ui->tableWidget->setColumnCount(radius * 2 + 1);
+
+        /* Fill Tables With 1 Values */
+        for (int x = 0; x < ui->tableWidget->rowCount(); ++x) {
+            for (int y = 0; y < ui->tableWidget->columnCount(); ++y) {
+
+                QTableWidgetItem *item = new QTableWidgetItem;
+                ui->tableWidget->setItem(x,y,item);
+                item->setText(QString::number(1));
+            }
+        }
+    });
 }
 
 FFTW::~FFTW()
@@ -33,14 +49,18 @@ QImage FFTW::swap(QImage &input)
 
 void FFTW::forward()
 {
-    int mSum = 25;
+    int radius = ui->sbRadius->value();
+    QVector<int> value;
 
-    int radius = 2;
-    QVector<int> value = {1,1,1,1,1,
-                         1,1,1,1,1,
-                         1,1,1,1,1,
-                         1,1,1,1,1,
-                         1,1,1,1,1};
+    /* Sum of the Mask */
+    int mSum = 0;
+    for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
+        for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
+            int mask_value = ui->tableWidget->item(i, j)->text().toInt();
+            mSum += mask_value;
+            value.push_back(mask_value);
+        }
+    }
 
     /* Create And Fill Mask HxW */
     QImage mMask = QImage(image.width(), image.height(), QImage::Format_RGB32);

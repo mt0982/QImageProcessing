@@ -148,11 +148,12 @@ void HoughTransform::on_pbCalculate_clicked()
     windowAccumulator->show();
 }
 
-
-
-
-
-
+void HoughTransform::setImage(const QImage &value)
+{
+    /* Flag - Calculate Canny Only Once Per New Image */
+    image = value;
+    flag = false;
+}
 
 
 

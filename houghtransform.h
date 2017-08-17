@@ -18,6 +18,8 @@ public:
     explicit HoughTransform(FacadeImage *parent = 0);
     ~HoughTransform();
 
+    virtual void setImage(const QImage &value) override;
+
 private slots:
     void on_pbCalculate_clicked();
 
@@ -29,7 +31,6 @@ private:
     QImage iOriginal;
     QLabel *windowAccumulator;
     bool flag;
-
 };
 
 #endif // HOUGHTRANSFORM_H

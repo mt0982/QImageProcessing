@@ -67,8 +67,10 @@ void MainWindow::on_actionFFTW_Convolution_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
-                                                    "/home/asus/Obrazy", tr("Image Files (*.png *.jpg *.bmp)"));
+    QString filePath = QFileDialog::getOpenFileName(this,
+                                                    tr("Open Image"),
+                                                    "/home/asus/Programy/Qt/Projekty/Project_PoC/Pictures",
+                                                    tr("Image Files (*.png *.jpg)"));
 
     if (!filePath.isEmpty()) {
 
@@ -82,8 +84,6 @@ void MainWindow::on_actionOpen_triggered()
         houghTransform->setImage(image);
         fftwConvolution->setImage(image);
     }
-
-    qDebug() << QDir::currentPath();
 }
 
 

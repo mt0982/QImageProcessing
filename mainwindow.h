@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QStandardPaths>
 #include <QImage>
 #include <QPixmap>
 #include <QDebug>

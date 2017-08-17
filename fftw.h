@@ -22,7 +22,7 @@ private slots:
 private:
     Ui::FFTW *ui;
 
-    void spectrum();
+    void forward();
     QImage swap(QImage &input);
 };
 

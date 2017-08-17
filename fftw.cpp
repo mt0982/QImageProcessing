@@ -14,81 +14,12 @@ FFTW::~FFTW()
     delete ui;
 }
 
-void FFTW::spectrum()
-{
-    fftw_complex *input_red, *input_green, *input_blue;
-    fftw_complex *output_red, *output_green, *output_blue;
-
-    /* Alloc FFTW */
-    input_red = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-    input_green = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-    input_blue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-    output_red = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-    output_green = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-    output_blue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
-
-    /* Init FFTW */
-    QRgb *pixel = (QRgb*)image.bits();
-    for(int i = 0; i < image.width() * image.height(); i++) {
-
-        input_red[i][REALIS] = qRed(pixel[i]);
-        input_red[i][IMAGINALIS] = 0;
-        input_green[i][REALIS] = qGreen(pixel[i]);
-        input_green[i][IMAGINALIS] = 0;
-        input_blue[i][REALIS] = qBlue(pixel[i]);
-        input_blue[i][IMAGINALIS] = 0;
-    }
-
-    fftw_plan plan_red, plan_green, plan_blue;
-    plan_red = fftw_plan_dft_2d(image.height(), image.width(), input_red, output_red, FFTW_FORWARD, FFTW_ESTIMATE);
-    plan_green = fftw_plan_dft_2d(image.height(), image.width(), input_green, output_green, FFTW_FORWARD, FFTW_ESTIMATE);
-    plan_blue = fftw_plan_dft_2d(image.height(), image.width(), input_blue, output_blue, FFTW_FORWARD, FFTW_ESTIMATE);
-
-    fftw_execute(plan_red);
-    fftw_execute(plan_green);
-    fftw_execute(plan_blue);
-
-    /* Alloc Output */
-    output = QImage(image.width(), image.height(), QImage::Format_RGB32);
-    QRgb *ptr_output = (QRgb*)output.bits();
-
-    /* Find Max */
-    QColor maximumFromRealis;
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-
-        QColor crealis = QColor(log(abs(output_red[i][REALIS]) + 1),
-                                log(abs(output_green[i][REALIS]) + 1),
-                                log(abs(output_blue[i][REALIS]) + 1));
-
-        maximumFromRealis = QColor(qMax(maximumFromRealis.red(), crealis.red()),
-                                   qMax(maximumFromRealis.green(), crealis.green()),
-                                   qMax(maximumFromRealis.blue(), crealis.blue()));
-    }
-
-    /* Normalize */
-    maximumFromRealis = QColor(255 / maximumFromRealis.red(),
-                               255 / maximumFromRealis.green(),
-                               255 / maximumFromRealis.blue());
-
-    /* Visualisation */
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-
-        QColor crealis = QColor(log(abs(output_red[i][REALIS]) + 1) * maximumFromRealis.red(),
-                                log(abs(output_green[i][REALIS]) + 1) * maximumFromRealis.green(),
-                                log(abs(output_blue[i][REALIS]) + 1) * maximumFromRealis.blue());
-
-        ptr_output[i] = qRgb(crealis.red(), crealis.green(), crealis.blue());
-    }
-
-    sendImage(swap(output));
-}
-
 QImage FFTW::swap(QImage &input)
 {
-    /* Quarter: I <-> III, II <-> IV */
+    /* Swap Quarters I <-> III, II <-> IV */
     for (int y = 0; y < input.height() / 2; ++y) {
         QRgb *first = (QRgb*)input.scanLine(y);
-        QRgb *second = (QRgb*)input.scanLine(y + image.height() / 2);
+        QRgb *second = (QRgb*)input.scanLine(y + input.height() / 2);
 
         for (int x = 0; x < input.width() / 2; ++x) {
 
@@ -100,9 +31,113 @@ QImage FFTW::swap(QImage &input)
     return input;
 }
 
+void FFTW::forward()
+{
+    int mSum = 25;
+
+    int radius = 2;
+    QVector<int> value = {1,1,1,1,1,
+                         1,1,1,1,1,
+                         1,1,1,1,1,
+                         1,1,1,1,1,
+                         1,1,1,1,1};
+
+    /* Create And Fill Mask HxW */
+    QImage mMask = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    /* Put Small Mask Into Big (WxH) */
+    int index = 0;
+    for (int y = (image.height() / 2) - radius; y <= (image.height() / 2) + radius; ++y) {
+
+        QRgb *ptr_mask = (QRgb*)mMask.scanLine(y);
+
+        for (int x = (image.width() / 2) - radius; x <= (image.width() / 2) + radius; ++x) {
+
+            ptr_mask[x] = value[index];
+            index++;
+        }
+    }
+
+    /* Swap Quarters I <-> III, II <-> IV */
+    mMask = swap(mMask);
+
+    /* Alloc */
+    fftw_complex *inRed, *inGreen, *inBlue, *inMask;
+    fftw_complex *outRed, *outGreen, *outBlue, *outMask;
+
+    inRed = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    inGreen = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    inBlue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    inMask = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outRed = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outGreen = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outBlue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outMask = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+
+    /* Initialize */
+    QRgb *ptr_image = (QRgb*)image.bits();
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+
+        QRgb *ptr_mask = (QRgb*)mMask.scanLine(i/image.width());
+
+        inRed[i][REALIS] = qRed(ptr_image[i]);
+        inRed[i][IMAGINALIS] = 0;
+        inGreen[i][REALIS] = qGreen(ptr_image[i]);
+        inGreen[i][IMAGINALIS] = 0;
+        inBlue[i][REALIS] = qBlue(ptr_image[i]);
+        inBlue[i][IMAGINALIS] = 0;
+        inMask[i][REALIS] = ((1.0 * ptr_mask[i%image.width()]) / mSum);
+        inMask[i][IMAGINALIS] = 0;
+    }
+
+    /* Plans */
+    fftw_plan planRed, planBlue, planGreen, planMask;
+    planRed = fftw_plan_dft_2d(image.height(), image.width(), inRed, outRed, FFTW_FORWARD, FFTW_ESTIMATE);
+    planGreen = fftw_plan_dft_2d(image.height(), image.width(), inGreen, outGreen, FFTW_FORWARD, FFTW_ESTIMATE);
+    planBlue = fftw_plan_dft_2d(image.height(), image.width(), inBlue, outBlue, FFTW_FORWARD, FFTW_ESTIMATE);
+    planMask = fftw_plan_dft_2d(image.height(), image.width(), inMask, outMask, FFTW_FORWARD, FFTW_ESTIMATE);
+
+    fftw_execute(planRed);          fftw_destroy_plan(planRed);
+    fftw_execute(planGreen);        fftw_destroy_plan(planGreen);
+    fftw_execute(planBlue);         fftw_destroy_plan(planBlue);
+    fftw_execute(planMask);         fftw_destroy_plan(planMask);
+
+    /* Calculate New Values */
+    for(int i = 0; i < image.width() * image.height(); i++) {
+        inRed[i][REALIS] = outRed[i][REALIS] * outMask[i][REALIS] - outRed[i][IMAGINALIS] * outMask[i][IMAGINALIS];
+        inRed[i][IMAGINALIS] = outRed[i][IMAGINALIS] * outMask[i][REALIS] + outRed[i][REALIS] * outMask[i][IMAGINALIS];
+        inGreen[i][REALIS] = outGreen[i][REALIS] * outMask[i][REALIS] - outGreen[i][IMAGINALIS] * outMask[i][IMAGINALIS];
+        inGreen[i][IMAGINALIS] = outGreen[i][IMAGINALIS] * outMask[i][REALIS] + outGreen[i][REALIS] * outMask[i][IMAGINALIS];
+        inBlue[i][REALIS] = outBlue[i][REALIS] * outMask[i][REALIS] - outBlue[i][IMAGINALIS] * outMask[i][IMAGINALIS];
+        inBlue[i][IMAGINALIS] = outBlue[i][IMAGINALIS] * outMask[i][REALIS] + outBlue[i][REALIS] * outMask[i][IMAGINALIS];
+    }
+
+    /* Backward */
+    planRed = fftw_plan_dft_2d(image.height(), image.width(), inRed, outRed, FFTW_FORWARD, FFTW_ESTIMATE);
+    planGreen = fftw_plan_dft_2d(image.height(), image.width(), inGreen, outGreen, FFTW_FORWARD, FFTW_ESTIMATE);
+    planBlue = fftw_plan_dft_2d(image.height(), image.width(), inBlue, outBlue, FFTW_FORWARD, FFTW_ESTIMATE);
+
+    fftw_execute(planRed);          fftw_destroy_plan(planRed);
+    fftw_execute(planGreen);        fftw_destroy_plan(planGreen);
+    fftw_execute(planBlue);         fftw_destroy_plan(planBlue);
+
+    /* Output */
+    output = QImage(image.width(), image.height(), QImage::Format_ARGB32);
+    QRgb *ptr_output = (QRgb*)output.bits();
+
+    for(int i = 0; i < image.width() * image.height(); i++) {
+
+        ptr_output[i] = qRgb(qBound(0, (int)(outRed[i][REALIS] / (image.width() * image.height())), 255),
+                             qBound(0, (int)(outGreen[i][REALIS] / (image.width() * image.height())), 255),
+                             qBound(0, (int)(outBlue[i][REALIS] / (image.width() * image.height())), 255));
+    }
+
+    sendImage(output);
+}
+
 void FFTW::on_pbCalculate_clicked()
 {
-    spectrum();
+    forward();
 }
 
 

@@ -50,51 +50,51 @@ QImage FFTW::swap(QImage &input)
 void FFTW::swapArrays(int **mask, int **reversed, int width, int height)
 {
     /* Swap Quarters I <-> III, II <-> IV */
-    int tempY=0;
-    for(int y=height/2; y<height; ++y) {
-        int tempX=0;
-        for(int x=width/2; x<width; ++x) {
-            reversed[tempY][tempX] = mask[y][x];
-            tempX++;
+    int yindex = 0;
+    for(int y = height / 2; y < height; ++y) {
+        int xindex = 0;
+        for(int x = width / 2; x < width; ++x) {
+            reversed[yindex][xindex] = mask[y][x];
+            xindex++;
         }
-        tempY++;
+        yindex++;
     }
 
-    tempY=(int)(ceil(height/2.0));
-    for(int y=0; y<height/2; ++y) {
-        int tempX=(int)(ceil(width/2.0));
-        for(int x=0; x<width/2; ++x) {
-            reversed[tempY][tempX] = mask[y][x];
-            tempX++;
+    yindex = height / 2.0;
+    for(int y = 0; y < height / 2; ++y) {
+        int xindex = width/2.0;
+        for(int x = 0; x < width / 2; ++x) {
+            reversed[yindex][xindex] = mask[y][x];
+            xindex++;
         }
-        tempY++;
+        yindex++;
     }
 
-    tempY=0;
-    for(int y=height/2; y<height; ++y) {
-        int tempX=(int)(ceil(width/2.0));
-        for(int x=0; x<width/2; ++x) {
-            reversed[tempY][tempX] = mask[y][x];
-            tempX++;
+    yindex = 0;
+    for(int y = height / 2; y < height; ++y) {
+        int xindex = width/2.0;
+        for(int x = 0; x < width / 2; ++x) {
+            reversed[yindex][xindex] = mask[y][x];
+            xindex++;
         }
-        tempY++;
+        yindex++;
     }
 
-    tempY=(int)(ceil(height/2.0));
-    for(int y=0; y<height/2; ++y) {
-        int tempX=0;
-        for(int x=width/2; x<width; ++x) {
-            reversed[tempY][tempX] = mask[y][x];
-            tempX++;
+    yindex = height/2.0;
+    for(int y = 0; y < height / 2; ++y) {
+        int xindex=0;
+        for(int x = width / 2; x < width; ++x) {
+            reversed[yindex][xindex] = mask[y][x];
+            xindex++;
         }
-        tempY++;
+        yindex++;
     }
 }
 
 void FFTW::forward()
 {
     int radius = ui->sbRadius->value();
-    QVector<int> value;// = {-1, -2, -1, 0, 0, 0, 1, 2 ,1};
+    QVector<int> value;
 
     /* Sum of the Mask & Initialize */
     int mSum = 0;

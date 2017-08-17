@@ -24,6 +24,7 @@ private:
 
     void forward();
     QImage swap(QImage &input);
+    void swapArrays(int **mask, int **reversed, int width, int height);
 };
 
 #endif // FFTW_H

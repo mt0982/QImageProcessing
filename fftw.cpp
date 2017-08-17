@@ -47,13 +47,68 @@ QImage FFTW::swap(QImage &input)
     return input;
 }
 
+void FFTW::swapArrays(int **mask, int **reversed, int width, int height)
+{
+    /* Swap Quarters I <-> III, II <-> IV */
+    int tempY=0;
+    for(int y=height/2; y<height; ++y) {
+        int tempX=0;
+        for(int x=width/2; x<width; ++x) {
+            reversed[tempY][tempX] = mask[y][x];
+            tempX++;
+        }
+        tempY++;
+    }
+
+    tempY=(int)(ceil(height/2.0));
+    for(int y=0; y<height/2; ++y) {
+        int tempX=(int)(ceil(width/2.0));
+        for(int x=0; x<width/2; ++x) {
+            reversed[tempY][tempX] = mask[y][x];
+            tempX++;
+        }
+        tempY++;
+    }
+
+    tempY=0;
+    for(int y=height/2; y<height; ++y) {
+        int tempX=(int)(ceil(width/2.0));
+        for(int x=0; x<width/2; ++x) {
+            reversed[tempY][tempX] = mask[y][x];
+            tempX++;
+        }
+        tempY++;
+    }
+
+    tempY=(int)(ceil(height/2.0));
+    for(int y=0; y<height/2; ++y) {
+        int tempX=0;
+        for(int x=width/2; x<width; ++x) {
+            reversed[tempY][tempX] = mask[y][x];
+            tempX++;
+        }
+        tempY++;
+    }
+}
+
 void FFTW::forward()
 {
-    int mSum = 1;
+    int radius = ui->sbRadius->value();
+    QVector<int> value;// = {-1, -2, -1, 0, 0, 0, 1, 2 ,1};
 
-    int radius = 1;
-    QVector<int> value = {-1, -2, -1, 0, 0, 0, 1, 2 ,1};
+    /* Sum of the Mask & Initialize */
+    int mSum = 0;
+    for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
+        for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
+            int arg = ui->tableWidget->item(i, j)->text().toInt();
+            mSum += arg;
+            value.push_back(arg);
+        }
+    }
 
+    mSum = (mSum != 0) ? mSum : 1;
+
+    /* 2D Array Works Better Than QImage, QImage produce some bugs (black screen) after few compute */
     /* Create And Fill Mask HxW */
     int **mMask = new int*[image.height()];
     int **mMaskReversed = new int*[image.height()];
@@ -77,13 +132,12 @@ void FFTW::forward()
         for (int x = (512 / 2) - radius; x <= (512 / 2) + radius; ++x) {
 
             mMask[y][x] = value[index];
-            mMaskReversed[y][x] = value[index];
             index++;
         }
     }
 
-    /* Swap Quarters I <-> III, II <-> IV */
-    //mMask = swap(mMask);
+    /* Swap Quarters (Array) I <-> III, II <-> IV */
+    swapArrays(mMask, mMaskReversed, image.width(), image.height());
 
     /* Alloc */
     fftw_complex *inRed, *inGreen, *inBlue, *inMask;
@@ -108,7 +162,7 @@ void FFTW::forward()
         inGreen[i][IMAGINALIS] = 0;
         inBlue[i][REALIS] = qBlue(ptr_image[i]);
         inBlue[i][IMAGINALIS] = 0;
-        inMask[i][REALIS] = ((1.0 * mMask[i / image.width()][i % image.width()]) / mSum);
+        inMask[i][REALIS] = ((1.0 * mMaskReversed[i / image.width()][i % image.width()]) / mSum);
         inMask[i][IMAGINALIS] = 0;
     }
 

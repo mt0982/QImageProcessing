@@ -23,6 +23,11 @@ FFTW::FFTW(FacadeImage *parent): FacadeImage(parent), ui(new Ui::FFTW), specturm
             }
         }
     });
+
+    /* Visualisation Connect (ComboBox) */
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=](const int &index) {
+        showSpecturm(index);
+    });
 }
 
 FFTW::~FFTW()
@@ -157,7 +162,7 @@ void FFTW::showSpecturm(const int operation_nr)
             maxBlue = qMax(maxRed, spectrumGreen);
             maxGreen = qMax(maxRed, spectrumBlue);
         }
-        else {
+        else {                              //Phase
             double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
             double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
             double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
@@ -197,7 +202,7 @@ void FFTW::showSpecturm(const int operation_nr)
                                  spectrumGreen * maxGreen,
                                  spectrumBlue * maxBlue);
         }
-        else {
+        else {                          //Phase
             double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
             double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
             double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
@@ -339,7 +344,7 @@ void FFTW::convolution()
 void FFTW::on_pbCalculate_clicked()
 {
     convolution();
-    showSpecturm(0);
+    showSpecturm(ui->comboBox->currentIndex());
 }
 
 

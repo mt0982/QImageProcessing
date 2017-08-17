@@ -4,7 +4,7 @@
 #define REALIS 0
 #define IMAGINALIS 1
 
-FFTW::FFTW(FacadeImage *parent): FacadeImage(parent), ui(new Ui::FFTW)
+FFTW::FFTW(FacadeImage *parent): FacadeImage(parent), ui(new Ui::FFTW), specturmWindow(NULL)
 {
     ui->setupUi(this);
 
@@ -91,7 +91,132 @@ void FFTW::swapArrays(int **mask, int **reversed, int width, int height)
     }
 }
 
-void FFTW::forward()
+void FFTW::showSpecturm(const int operation_nr)
+{
+    /* Alloc */
+    fftw_complex *inRed, *inGreen, *inBlue;
+    fftw_complex *outRed, *outGreen, *outBlue;
+
+    inRed = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    inGreen = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    inBlue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outRed = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outGreen = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+    outBlue = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * image.width() * image.height());
+
+    /* Initialize */
+    QRgb *ptr_image = (QRgb*)image.bits();
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+
+        inRed[i][REALIS] = qRed(ptr_image[i]);
+        inRed[i][IMAGINALIS] = 0;
+        inGreen[i][REALIS] = qGreen(ptr_image[i]);
+        inGreen[i][IMAGINALIS] = 0;
+        inBlue[i][REALIS] = qBlue(ptr_image[i]);
+        inBlue[i][IMAGINALIS] = 0;
+    }
+
+    /* Plans */
+    fftw_plan planRed, planBlue, planGreen;
+    planRed = fftw_plan_dft_2d(image.height(), image.width(), inRed, outRed, FFTW_FORWARD, FFTW_ESTIMATE);
+    planGreen = fftw_plan_dft_2d(image.height(), image.width(), inGreen, outGreen, FFTW_FORWARD, FFTW_ESTIMATE);
+    planBlue = fftw_plan_dft_2d(image.height(), image.width(), inBlue, outBlue, FFTW_FORWARD, FFTW_ESTIMATE);
+
+    fftw_execute(planRed);          fftw_destroy_plan(planRed);
+    fftw_execute(planGreen);        fftw_destroy_plan(planGreen);
+    fftw_execute(planBlue);         fftw_destroy_plan(planBlue);
+
+    /* Find Max */
+    double maxRed = 0, maxBlue = 0, maxGreen = 0;
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+
+        if (operation_nr == 0) {            //Realis
+            outRed[i][REALIS] = log(abs(outRed[i][REALIS]) + 1);
+            outGreen[i][REALIS] = log(abs(outGreen[i][REALIS]) + 1);
+            outBlue[i][REALIS] = log(abs(outBlue[i][REALIS]) + 1);
+
+            maxRed = qMax(maxRed, outRed[i][REALIS]);
+            maxBlue = qMax(maxRed, outGreen[i][REALIS]);
+            maxGreen = qMax(maxRed, outBlue[i][REALIS]);
+        }
+        else if (operation_nr == 1) {       //Imaginalis
+            outRed[i][IMAGINALIS] = log(abs(outRed[i][IMAGINALIS]) + 1);
+            outGreen[i][IMAGINALIS] = log(abs(outGreen[i][IMAGINALIS]) + 1);
+            outBlue[i][IMAGINALIS] = log(abs(outBlue[i][IMAGINALIS]) + 1);
+
+            maxRed = qMax(maxRed, outRed[i][IMAGINALIS]);
+            maxBlue = qMax(maxRed, outGreen[i][IMAGINALIS]);
+            maxGreen = qMax(maxRed, outBlue[i][IMAGINALIS]);
+        }
+        else if (operation_nr == 2) {       //Spectrum, hypot = sqrt(a*a + b*b)
+            double spectrumRed = hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]);
+            double spectrumGreen = hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]);
+            double spectrumBlue = hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]);
+
+            maxRed = qMax(maxRed, spectrumRed);
+            maxBlue = qMax(maxRed, spectrumGreen);
+            maxGreen = qMax(maxRed, spectrumBlue);
+        }
+        else {
+            double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
+            double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
+            double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
+
+            maxRed = qMax(maxRed, phaseRed);
+            maxBlue = qMax(maxBlue, phaseGreen);
+            maxGreen = qMax(maxGreen, phaseBlue);
+        }
+    }
+
+    maxRed = 255.f / maxRed;
+    maxGreen = 255.f / maxGreen;
+    maxBlue = 255.f / maxBlue;
+
+    /* Output */
+    output = QImage(image.width(), image.height(), QImage::Format_ARGB32);
+    QRgb *ptr_output = (QRgb*)output.bits();
+
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+
+        if (operation_nr == 0) {        //Realis
+            ptr_output[i] = qRgb(outRed[i][REALIS] * maxRed,
+                                 outGreen[i][REALIS] * maxGreen,
+                                 outBlue[i][REALIS] * maxBlue);
+        }
+        else if (operation_nr == 1) {   //Imaginalis
+            ptr_output[i] = qRgb(outRed[i][IMAGINALIS] * maxRed,
+                                 outGreen[i][IMAGINALIS] * maxGreen,
+                                 outBlue[i][IMAGINALIS] * maxBlue);
+        }
+        else if (operation_nr == 2) {   //Spectrum, hypot = sqrt(a*a + b*b)
+            double spectrumRed = hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]);
+            double spectrumGreen = hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]);
+            double spectrumBlue = hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]);
+
+            ptr_output[i] = qRgb(spectrumRed * maxRed,
+                                 spectrumGreen * maxGreen,
+                                 spectrumBlue * maxBlue);
+        }
+        else {
+            double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
+            double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
+            double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
+
+            ptr_output[i] = qRgb(phaseRed * maxRed,
+                                 phaseGreen * maxGreen,
+                                 phaseBlue * maxBlue);
+        }
+    }
+
+    /* Swap Quarters I <-> III, II <-> IV */
+    output = swap(output);
+
+    if (specturmWindow == NULL) specturmWindow = new QLabel;
+    specturmWindow->setPixmap(QPixmap::fromImage(output));
+    specturmWindow->show();
+}
+
+void FFTW::convolution()
 {
     int radius = ui->sbRadius->value();
     QVector<int> value;
@@ -154,7 +279,7 @@ void FFTW::forward()
 
     /* Initialize */
     QRgb *ptr_image = (QRgb*)image.bits();
-    for (int i = 0; i < image.width() * image.height(); ++i) {\
+    for (int i = 0; i < image.width() * image.height(); ++i) {
 
         inRed[i][REALIS] = qRed(ptr_image[i]);
         inRed[i][IMAGINALIS] = 0;
@@ -197,8 +322,6 @@ void FFTW::forward()
     fftw_execute(planGreen);        fftw_destroy_plan(planGreen);
     fftw_execute(planBlue);         fftw_destroy_plan(planBlue);
 
-    qDebug() << outRed[0][REALIS];
-
     /* Output */
     output = QImage(image.width(), image.height(), QImage::Format_ARGB32);
     QRgb *ptr_output = (QRgb*)output.bits();
@@ -215,7 +338,8 @@ void FFTW::forward()
 
 void FFTW::on_pbCalculate_clicked()
 {
-    forward();
+    convolution();
+    showSpecturm(0);
 }
 
 

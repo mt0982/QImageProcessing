@@ -2,6 +2,7 @@
 #define FFTW_H
 
 #include <QWidget>
+#include <QLabel>
 #include <fftw3.h>
 #include "Pattern/facadeimage.h"
 
@@ -22,9 +23,12 @@ private slots:
 private:
     Ui::FFTW *ui;
 
-    void forward();
+    QLabel *specturmWindow;
+
+    void convolution();
     QImage swap(QImage &input);
     void swapArrays(int **mask, int **reversed, int width, int height);
+    void showSpecturm(const int operation_nr);
 };
 
 #endif // FFTW_H

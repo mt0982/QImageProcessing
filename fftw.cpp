@@ -49,37 +49,41 @@ QImage FFTW::swap(QImage &input)
 
 void FFTW::forward()
 {
-    int radius = ui->sbRadius->value();
-    QVector<int> value;
+    int mSum = 1;
 
-    /* Sum of the Mask & Init */
-    int mSum = 0;
-    for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
-        for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
-            int mask_value = ui->tableWidget->item(i, j)->text().toInt();
-            mSum += mask_value;
-            value.push_back(mask_value);
+    int radius = 1;
+    QVector<int> value = {-1, -2, -1, 0, 0, 0, 1, 2 ,1};
+
+    /* Create And Fill Mask HxW */
+    int **mMask = new int*[image.height()];
+    int **mMaskReversed = new int*[image.height()];
+
+    for(int i = 0; i < image.height(); i++){
+        mMask[i] = new int[512];
+        mMaskReversed[i] = new int[512];
+    }
+
+    for(int y = 0; y < image.height(); ++y){
+        for(int x = 0; x < image.width(); ++x){
+            mMask[y][x] = 0;
+            mMaskReversed[y][x] = 0;
         }
     }
 
-    /* Create And Fill Mask HxW */
-    QImage mMask = QImage(image.width(), image.height(), QImage::Format_RGB32);
-
-    /* Put Small Mask Into Big (WxH) */
+    /* Put Small Mask Into Big */
     int index = 0;
-    for (int y = (image.height() / 2) - radius; y <= (image.height() / 2) + radius; ++y) {
+    for (int y = (512 / 2) - radius; y <= (512 / 2) + radius; ++y) {
 
-        QRgb *ptr_mask = (QRgb*)mMask.scanLine(y);
+        for (int x = (512 / 2) - radius; x <= (512 / 2) + radius; ++x) {
 
-        for (int x = (image.width() / 2) - radius; x <= (image.width() / 2) + radius; ++x) {
-
-            ptr_mask[x] = value[index];
+            mMask[y][x] = value[index];
+            mMaskReversed[y][x] = value[index];
             index++;
         }
     }
 
     /* Swap Quarters I <-> III, II <-> IV */
-    mMask = swap(mMask);
+    //mMask = swap(mMask);
 
     /* Alloc */
     fftw_complex *inRed, *inGreen, *inBlue, *inMask;
@@ -96,9 +100,7 @@ void FFTW::forward()
 
     /* Initialize */
     QRgb *ptr_image = (QRgb*)image.bits();
-    for (int i = 0; i < image.width() * image.height(); ++i) {
-
-        QRgb *ptr_mask = (QRgb*)mMask.scanLine(i/image.width());
+    for (int i = 0; i < image.width() * image.height(); ++i) {\
 
         inRed[i][REALIS] = qRed(ptr_image[i]);
         inRed[i][IMAGINALIS] = 0;
@@ -106,7 +108,7 @@ void FFTW::forward()
         inGreen[i][IMAGINALIS] = 0;
         inBlue[i][REALIS] = qBlue(ptr_image[i]);
         inBlue[i][IMAGINALIS] = 0;
-        inMask[i][REALIS] = ((1.0 * ptr_mask[i%image.width()]) / mSum);
+        inMask[i][REALIS] = ((1.0 * mMask[i / image.width()][i % image.width()]) / mSum);
         inMask[i][IMAGINALIS] = 0;
     }
 
@@ -140,6 +142,8 @@ void FFTW::forward()
     fftw_execute(planRed);          fftw_destroy_plan(planRed);
     fftw_execute(planGreen);        fftw_destroy_plan(planGreen);
     fftw_execute(planBlue);         fftw_destroy_plan(planBlue);
+
+    qDebug() << outRed[0][REALIS];
 
     /* Output */
     output = QImage(image.width(), image.height(), QImage::Format_ARGB32);

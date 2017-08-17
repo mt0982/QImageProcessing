@@ -52,7 +52,7 @@ void FFTW::forward()
     int radius = ui->sbRadius->value();
     QVector<int> value;
 
-    /* Sum of the Mask */
+    /* Sum of the Mask & Init */
     int mSum = 0;
     for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
         for (int j = 0; j < ui->tableWidget->columnCount(); ++j) {
@@ -133,9 +133,9 @@ void FFTW::forward()
     }
 
     /* Backward */
-    planRed = fftw_plan_dft_2d(image.height(), image.width(), inRed, outRed, FFTW_FORWARD, FFTW_ESTIMATE);
-    planGreen = fftw_plan_dft_2d(image.height(), image.width(), inGreen, outGreen, FFTW_FORWARD, FFTW_ESTIMATE);
-    planBlue = fftw_plan_dft_2d(image.height(), image.width(), inBlue, outBlue, FFTW_FORWARD, FFTW_ESTIMATE);
+    planRed = fftw_plan_dft_2d(image.height(), image.width(), inRed, outRed, FFTW_BACKWARD, FFTW_ESTIMATE);
+    planGreen = fftw_plan_dft_2d(image.height(), image.width(), inGreen, outGreen, FFTW_BACKWARD, FFTW_ESTIMATE);
+    planBlue = fftw_plan_dft_2d(image.height(), image.width(), inBlue, outBlue, FFTW_BACKWARD, FFTW_ESTIMATE);
 
     fftw_execute(planRed);          fftw_destroy_plan(planRed);
     fftw_execute(planGreen);        fftw_destroy_plan(planGreen);

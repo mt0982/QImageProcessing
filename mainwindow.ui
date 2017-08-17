@@ -24,7 +24,7 @@
        <enum>QFrame::Plain</enum>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string/>
       </property>
      </widget>
     </item>
@@ -50,6 +50,13 @@
     <addaction name="actionHough"/>
     <addaction name="actionFFTW_Convolution"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuFilters"/>
   </widget>
   <action name="actionGauss">
@@ -80,6 +87,11 @@
   <action name="actionFFTW_Convolution">
    <property name="text">
     <string>FFTW Convolution</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
    </property>
   </action>
  </widget>

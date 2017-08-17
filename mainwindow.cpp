@@ -17,16 +17,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(morfologicalFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(houghTransform, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(fftwConvolution, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
-
-    QImage image("/home/asus/Obrazy/lena.png");
-    ui->labelImage->setPixmap(QPixmap::fromImage(image));
-
-    gaussUnsharpFilter->setImage(image);
-    staticFilter->setImage(image);
-    cannyFilter->setImage(image);
-    morfologicalFilter->setImage(image);
-    houghTransform->setImage(image);
-    fftwConvolution->setImage(image);
 }
 
 MainWindow::~MainWindow()
@@ -75,20 +65,18 @@ void MainWindow::on_actionFFTW_Convolution_triggered()
     fftwConvolution->show();
 }
 
+void MainWindow::on_actionOpen_triggered()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
+                                                    "/home/asus/Obrazy", tr("Image Files (*.png *.jpg *.bmp)"));
 
+    QImage image(filePath);
+    ui->labelImage->setPixmap(QPixmap::fromImage(image));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    gaussUnsharpFilter->setImage(image);
+    staticFilter->setImage(image);
+    cannyFilter->setImage(image);
+    morfologicalFilter->setImage(image);
+    houghTransform->setImage(image);
+    fftwConvolution->setImage(image);
+}

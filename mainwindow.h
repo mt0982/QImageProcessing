@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
 #include <QImage>
 #include <QPixmap>
 #include <QDebug>
@@ -32,6 +33,7 @@ private slots:
     void on_actionMorfological_triggered();
     void on_actionHough_triggered();
     void on_actionFFTW_Convolution_triggered();
+    void on_actionOpen_triggered();
 
 private:
     Ui::MainWindow *ui;

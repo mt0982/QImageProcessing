@@ -154,9 +154,9 @@ void FFTW::showSpecturm(const int operation_nr)
             maxGreen = qMax(maxRed, outBlue[i][IMAGINALIS]);
         }
         else if (operation_nr == 2) {       //Spectrum, hypot = sqrt(a*a + b*b)
-            double spectrumRed = hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]);
-            double spectrumGreen = hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]);
-            double spectrumBlue = hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]);
+            double spectrumRed = log(hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]) + 1);
+            double spectrumGreen = log(hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]) + 1);
+            double spectrumBlue = log(hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]) + 1);
 
             maxRed = qMax(maxRed, spectrumRed);
             maxBlue = qMax(maxRed, spectrumGreen);
@@ -194,9 +194,9 @@ void FFTW::showSpecturm(const int operation_nr)
                                  outBlue[i][IMAGINALIS] * maxBlue);
         }
         else if (operation_nr == 2) {   //Spectrum, hypot = sqrt(a*a + b*b)
-            double spectrumRed = hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]);
-            double spectrumGreen = hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]);
-            double spectrumBlue = hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]);
+            double spectrumRed = log(hypot(outRed[i][REALIS], outRed[i][IMAGINALIS]) + 1);
+            double spectrumGreen = log(hypot(outGreen[i][REALIS], outGreen[i][IMAGINALIS]) + 1);
+            double spectrumBlue = log(hypot(outBlue[i][REALIS], outBlue[i][IMAGINALIS]) + 1);
 
             ptr_output[i] = qRgb(spectrumRed * maxRed,
                                  spectrumGreen * maxGreen,

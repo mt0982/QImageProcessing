@@ -1,8 +1,8 @@
 #include "houghtransform.h"
 #include "ui_houghtransform.h"
 
-HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::HoughTransform), flag(false),
-    windowAccumulator(NULL)
+HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::HoughTransform),
+    windowAccumulator(NULL), flag(false)
 {
     ui->setupUi(this);
 

@@ -163,9 +163,9 @@ void FFTW::showSpecturm(const int operation_nr)
             maxGreen = qMax(maxRed, spectrumBlue);
         }
         else {                              //Phase
-            double phaseRed = log(abs(atan(outRed[i][IMAGINALIS] / outRed[i][REALIS])) + 1);
-            double phaseGreen = log(abs(atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS])) + 1);
-            double phaseBlue = log(abs(atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS])) + 1);
+            double phaseRed = log(abs(atan2(outRed[i][IMAGINALIS], outRed[i][REALIS])) + 1);
+            double phaseGreen = log(abs(atan2(outGreen[i][IMAGINALIS], outGreen[i][REALIS])) + 1);
+            double phaseBlue = log(abs(atan2(outBlue[i][IMAGINALIS], outBlue[i][REALIS])) + 1);
 
             maxRed = qMax(maxRed, phaseRed);
             maxBlue = qMax(maxBlue, phaseGreen);
@@ -203,9 +203,9 @@ void FFTW::showSpecturm(const int operation_nr)
                                  spectrumBlue * maxBlue);
         }
         else {                          //Phase
-            double phaseRed = log(abs(atan(outRed[i][IMAGINALIS] / outRed[i][REALIS])) + 1);
-            double phaseGreen = log(abs(atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS])) + 1);
-            double phaseBlue = log(abs(atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS])) + 1);
+            double phaseRed = log(abs(atan2(outRed[i][IMAGINALIS], outRed[i][REALIS])) + 1);
+            double phaseGreen = log(abs(atan2(outGreen[i][IMAGINALIS], outGreen[i][REALIS])) + 1);
+            double phaseBlue = log(abs(atan2(outBlue[i][IMAGINALIS], outBlue[i][REALIS])) + 1);
 
             ptr_output[i] = qRgb(phaseRed * maxRed,
                                  phaseGreen * maxGreen,

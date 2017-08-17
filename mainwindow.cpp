@@ -82,6 +82,8 @@ void MainWindow::on_actionOpen_triggered()
         houghTransform->setImage(image);
         fftwConvolution->setImage(image);
     }
+
+    qDebug() << QDir::currentPath();
 }
 
 

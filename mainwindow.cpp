@@ -70,13 +70,28 @@ void MainWindow::on_actionOpen_triggered()
     QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
                                                     "/home/asus/Obrazy", tr("Image Files (*.png *.jpg *.bmp)"));
 
-    QImage image(filePath);
-    ui->labelImage->setPixmap(QPixmap::fromImage(image));
+    if (!filePath.isEmpty()) {
 
-    gaussUnsharpFilter->setImage(image);
-    staticFilter->setImage(image);
-    cannyFilter->setImage(image);
-    morfologicalFilter->setImage(image);
-    houghTransform->setImage(image);
-    fftwConvolution->setImage(image);
+        QImage image(filePath);
+        ui->labelImage->setPixmap(QPixmap::fromImage(image));
+
+        gaussUnsharpFilter->setImage(image);
+        staticFilter->setImage(image);
+        cannyFilter->setImage(image);
+        morfologicalFilter->setImage(image);
+        houghTransform->setImage(image);
+        fftwConvolution->setImage(image);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+

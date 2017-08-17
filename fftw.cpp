@@ -163,9 +163,9 @@ void FFTW::showSpecturm(const int operation_nr)
             maxGreen = qMax(maxRed, spectrumBlue);
         }
         else {                              //Phase
-            double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
-            double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
-            double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
+            double phaseRed = log(abs(atan(outRed[i][IMAGINALIS] / outRed[i][REALIS])) + 1);
+            double phaseGreen = log(abs(atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS])) + 1);
+            double phaseBlue = log(abs(atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS])) + 1);
 
             maxRed = qMax(maxRed, phaseRed);
             maxBlue = qMax(maxBlue, phaseGreen);
@@ -203,9 +203,9 @@ void FFTW::showSpecturm(const int operation_nr)
                                  spectrumBlue * maxBlue);
         }
         else {                          //Phase
-            double phaseRed = atan(outRed[i][IMAGINALIS] / outRed[i][REALIS]);
-            double phaseGreen = atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS]);
-            double phaseBlue = atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS]);
+            double phaseRed = log(abs(atan(outRed[i][IMAGINALIS] / outRed[i][REALIS])) + 1);
+            double phaseGreen = log(abs(atan(outGreen[i][IMAGINALIS] / outGreen[i][REALIS])) + 1);
+            double phaseBlue = log(abs(atan(outBlue[i][IMAGINALIS] / outBlue[i][REALIS])) + 1);
 
             ptr_output[i] = qRgb(phaseRed * maxRed,
                                  phaseGreen * maxGreen,
@@ -244,8 +244,8 @@ void FFTW::convolution()
     int **mMaskReversed = new int*[image.height()];
 
     for(int i = 0; i < image.height(); i++){
-        mMask[i] = new int[512];
-        mMaskReversed[i] = new int[512];
+        mMask[i] = new int[image.width()];
+        mMaskReversed[i] = new int[image.width()];
     }
 
     for(int y = 0; y < image.height(); ++y){
@@ -257,9 +257,9 @@ void FFTW::convolution()
 
     /* Put Small Mask Into Big */
     int index = 0;
-    for (int y = (512 / 2) - radius; y <= (512 / 2) + radius; ++y) {
+    for (int y = (image.height() / 2) - radius; y <= (image.height() / 2) + radius; ++y) {
 
-        for (int x = (512 / 2) - radius; x <= (512 / 2) + radius; ++x) {
+        for (int x = (image.width() / 2) - radius; x <= (image.width() / 2) + radius; ++x) {
 
             mMask[y][x] = value[index];
             index++;

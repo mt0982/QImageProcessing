@@ -5,33 +5,46 @@ Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram)
 {
     ui->setupUi(this);
 
-    QLineSeries *series0 = new QLineSeries();
-       QLineSeries *series1 = new QLineSeries();
+    QImage image("/home/asus/Programy/Qt/Projekty/Project_PoC/Pictures/lena.png");
 
-       *series0 << QPointF(1, 5) << QPointF(3, 7) << QPointF(7, 6) << QPointF(9, 7) << QPointF(12, 6)
-                << QPointF(16, 7) << QPointF(18, 5);
-       *series1 << QPointF(1, 3) << QPointF(3, 4) << QPointF(7, 3) << QPointF(8, 2) << QPointF(12, 3)
-                << QPointF(16, 4) << QPointF(18, 3);
+    QVector<int> red(255), green(255), blue(255);
+    red.fill(0);
+    green.fill(0);
+    blue.fill(0);
 
-       QAreaSeries *series = new QAreaSeries(series0, series1);
-       series->setName("Batman");
-       QPen pen(0x059605);
-       pen.setWidth(3);
-       series->setPen(pen);
+    QRgb *ptr_image = (QRgb*)image.bits();
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+        red[qRed(ptr_image[i])]++;
+        green[qGreen(ptr_image[i])]++;
+        blue[qBlue(ptr_image[i])]++;
+    }
 
-       QLinearGradient gradient(QPointF(0, 0), QPointF(0, 1));
-       gradient.setColorAt(0.0, 0x3cc63c);
-       gradient.setColorAt(1.0, 0x26f626);
-       gradient.setCoordinateMode(QGradient::ObjectBoundingMode);
-       series->setBrush(gradient);
+    QSplineSeries *series_red = new QSplineSeries();
+    QSplineSeries *series_green = new QSplineSeries();
+    QSplineSeries *series_blue = new QSplineSeries();
+
+    series_red->setColor(Qt::red);
+    series_green->setColor(Qt::green);
+    series_blue->setColor(Qt::blue);
+
+    for (int value = 0; value < 256; ++value) {
+
+        series_red->append(value, red[value]);
+        series_green->append(value, green[value]);
+        series_blue->append(value, blue[value]);
+    }
 
     QChart *chart = new QChart();
-    chart->addSeries(series);
-    chart->setTitle("Simple areachart example");
-    chart->createDefaultAxes();
-    chart->axisX()->setRange(0, 20);
-    chart->axisY()->setRange(0, 10);
+    chart->addSeries(series_red);
+    chart->addSeries(series_green);
+    chart->addSeries(series_blue);
+    //chart->setTitle("Histogram");
+    chart->setAnimationOptions(QChart::SeriesAnimations);
 
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+
+    ui->chart->setRenderHints(QPainter::Antialiasing);
     ui->chart->setChart(chart);
 }
 

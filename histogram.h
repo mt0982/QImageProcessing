@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtCharts>
+#include <QDebug>
 
 using namespace QtCharts;
 

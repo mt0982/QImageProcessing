@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QtCharts>
 
+using namespace QtCharts;
+
 namespace Ui {
 class Histogram;
 }

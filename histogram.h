@@ -20,6 +20,28 @@ public:
 
 private:
     Ui::Histogram *ui;
+
+    QVector<int> vec_red, vec_green, vec_blue;
+    QChart *chart;
+
+    void configureBarChart();
+    void getImageData();
 };
 
 #endif // HISTOGRAM_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

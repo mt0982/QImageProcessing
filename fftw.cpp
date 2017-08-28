@@ -7,6 +7,7 @@
 FFTW::FFTW(FacadeImage *parent): FacadeImage(parent), ui(new Ui::FFTW), specturmWindow(NULL)
 {
     ui->setupUi(this);
+    setWindowTitle("FFTW Convolution");
 
     /* Connect, SpinBox Value Changed, Cast Is Neccessary */
     connect(ui->sbRadius, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=](const int &radius) {

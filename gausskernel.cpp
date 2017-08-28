@@ -4,7 +4,7 @@
 GaussUnsharpFilter::GaussUnsharpFilter(FacadeImage *parent): FacadeImage(parent), ui(new Ui::GaussKernel)
 {
     ui->setupUi(this);
-    setWindowTitle("Kernel");
+    setWindowTitle("Gauss & Unsharp");
 
     /* Initialize, Minimum */
     ui->tableGauss->setRowCount(3);

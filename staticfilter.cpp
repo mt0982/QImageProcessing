@@ -4,6 +4,7 @@
 StaticFilter::StaticFilter(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::StaticFilter)
 {
     ui->setupUi(this);
+    setWindowTitle("Static Filters");
 
     connect(ui->cbCircular, &QCheckBox::clicked, [=](const bool flag) {ui->cbNormal->setChecked(!flag);});
     connect(ui->cbNormal, &QCheckBox::clicked, [=](const bool flag) {ui->cbCircular->setChecked(!flag);});

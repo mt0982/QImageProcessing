@@ -5,6 +5,7 @@ HoughTransform::HoughTransform(FacadeImage *parent) : FacadeImage(parent), ui(ne
     windowAccumulator(NULL), flag(false)
 {
     ui->setupUi(this);
+    setWindowTitle("Hough Transform");
 
     canny = new Canny;
     connect(canny, &Canny::sendImage, [this](const QImage &value) {

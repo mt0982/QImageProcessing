@@ -4,6 +4,7 @@
 Canny::Canny(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Canny)
 {
     ui->setupUi(this);
+    setWindowTitle("Canny");
 
     gaussUnsharpFilter = new GaussUnsharpFilter;
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(overloadImage(QImage)));

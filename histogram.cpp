@@ -1,22 +1,50 @@
 #include "histogram.h"
 #include "ui_histogram.h"
 
-Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram), vec_red(255), vec_green(255), vec_blue(255)
+Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram), vec_red(255), vec_green(255), vec_blue(255),
+    isCreated(false)
 {
     ui->setupUi(this);
+    setWindowTitle("Data Visualisation");
 
     chart = new QChart();
-
-    vec_red.fill(0);
-    vec_green.fill(0);
-    vec_blue.fill(0);
 
     getImageData();
     setBarChart();
 
     /* Set Theme Connect */
     connect(ui->cbTheme, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
-        qDebug() << index;
+
+        switch (index) {
+        case 0:
+            chart->setTheme(QChart::ChartThemeLight);
+            break;
+        case 1:
+            chart->setTheme(QChart::ChartThemeBlueCerulean);
+            break;
+        case 2:
+            chart->setTheme(QChart::ChartThemeDark);
+            break;
+        case 3:
+            chart->setTheme(QChart::ChartThemeBrownSand);
+            break;
+        case 4:
+            chart->setTheme(QChart::ChartThemeBlueNcs);
+            break;
+        case 5:
+            chart->setTheme(QChart::ChartThemeHighContrast);
+            break;
+        case 6:
+            chart->setTheme(QChart::ChartThemeBlueIcy);
+            break;
+        case 7:
+            chart->setTheme(QChart::ChartThemeQt);
+            break;
+        default:
+            break;
+        }
+
+        setBarChart();
     });
 
     ui->barChart->setRenderHints(QPainter::Antialiasing);
@@ -30,6 +58,8 @@ Histogram::~Histogram()
 
 void Histogram::setBarChart()
 {
+    chart->removeAllSeries();
+
     QSplineSeries *series_red = new QSplineSeries();
     QSplineSeries *series_green = new QSplineSeries();
     QSplineSeries *series_blue = new QSplineSeries();
@@ -45,10 +75,6 @@ void Histogram::setBarChart()
         series_blue->append(value, vec_blue[value]);
     }
 
-    /* Axis Category */
-    QValueAxis *axisY = new QValueAxis;
-    QValueAxis *axisX = new QValueAxis;
-
     /* Chart */
     chart->addSeries(series_red);
     chart->addSeries(series_green);
@@ -56,17 +82,36 @@ void Histogram::setBarChart()
     //chart->setTitle("Histogram");
     chart->setAnimationOptions(QChart::SeriesAnimations);
 
-    chart->addAxis(axisY, Qt::AlignLeft);
-    chart->addAxis(axisX, Qt::AlignBottom);
-    series_red->attachAxis(axisX);
-    series_red->attachAxis(axisY);
+    /* Add Axes Only Once */
+    if (!isCreated) {
+
+        /* Axis Category */
+        QValueAxis *axisY = new QValueAxis;
+        QValueAxis *axisX = new QValueAxis;
+
+        chart->addAxis(axisY, Qt::AlignLeft);
+        chart->addAxis(axisX, Qt::AlignBottom);
+
+        series_red->attachAxis(axisX);
+        series_red->attachAxis(axisY);
+    }
 
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
+
+    isCreated = true;
 }
 
 void Histogram::getImageData()
 {
+    vec_red.clear();
+    vec_blue.clear();
+    vec_green.clear();
+
+    vec_red.fill(0);
+    vec_green.fill(0);
+    vec_blue.fill(0);
+
     QImage image("/home/asus/Programy/Qt/Projekty/Project_PoC/Pictures/lena.png");
 
     QRgb *ptr_image = (QRgb*)image.bits();

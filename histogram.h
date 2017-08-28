@@ -23,6 +23,7 @@ private:
 
     QVector<int> vec_red, vec_green, vec_blue;
     QChart *chart;
+    bool isCreated;
 
     void setBarChart();
     void getImageData();

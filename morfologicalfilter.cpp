@@ -4,6 +4,7 @@
 MorfologicalFilter::MorfologicalFilter(FacadeImage *parent): FacadeImage(parent), ui(new Ui::MorfologicalFilter)
 {
     ui->setupUi(this);
+    setWindowTitle("Morfological Filters");
 
     array = new int*[ui->sbRadius->value() * 2 + 1];
     for (int i = 0; i < ui->sbRadius->value() * 2 + 1; ++i) {

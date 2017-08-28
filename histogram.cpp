@@ -34,12 +34,26 @@ Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram)
         series_blue->append(value, blue[value]);
     }
 
+    /* Axis Category */
+//    QCategoryAxis *category = new QCategoryAxis;
+//    category->append("Low", 5);
+//    category->append("Medium", 800);
+//    category->append("High", 1200);
+    QValueAxis *axisY = new QValueAxis;
+    QValueAxis *axisX = new QValueAxis;
+
+    /* Chart */
     QChart *chart = new QChart();
     chart->addSeries(series_red);
     chart->addSeries(series_green);
     chart->addSeries(series_blue);
     //chart->setTitle("Histogram");
     chart->setAnimationOptions(QChart::SeriesAnimations);
+
+    chart->addAxis(axisY, Qt::AlignLeft);
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series_red->attachAxis(axisX);
+    series_red->attachAxis(axisY);
 
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);

@@ -2,13 +2,13 @@
 #define HISTOGRAM_H
 
 #include <QWidget>
+#include <QtCharts>
 
 namespace Ui {
 class Histogram;
 }
 
-class Histogram : public QWidget
-{
+class Histogram: public QWidget {
     Q_OBJECT
 
 public:

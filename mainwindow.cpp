@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     morfologicalFilter = new MorfologicalFilter;
     houghTransform = new HoughTransform;
     fftwConvolution = new FFTW;
+    histogram = new Histogram;
 
     connect(gaussUnsharpFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
     connect(staticFilter, SIGNAL(sendImage(QImage)), this, SLOT(setImage(QImage)));
@@ -85,6 +86,20 @@ void MainWindow::on_actionOpen_triggered()
         fftwConvolution->setImage(image);
     }
 }
+
+void MainWindow::on_actionHistogram_triggered()
+{
+    histogram->show();
+}
+
+
+
+
+
+
+
+
+
 
 
 

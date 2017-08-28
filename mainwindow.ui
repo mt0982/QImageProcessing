@@ -56,8 +56,15 @@
     </property>
     <addaction name="actionOpen"/>
    </widget>
+   <widget class="QMenu" name="menuHistogram">
+    <property name="title">
+     <string>Data Visualisation</string>
+    </property>
+    <addaction name="actionHistogram"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuFilters"/>
+   <addaction name="menuHistogram"/>
   </widget>
   <action name="actionGauss">
    <property name="text">
@@ -92,6 +99,11 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionHistogram">
+   <property name="text">
+    <string>Histogram</string>
    </property>
   </action>
  </widget>

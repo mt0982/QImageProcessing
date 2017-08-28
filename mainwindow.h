@@ -13,6 +13,7 @@
 #include "morfologicalfilter.h"
 #include "canny.h"
 #include "houghtransform.h"
+#include "histogram.h"
 #include "fftw.h"
 
 namespace Ui {
@@ -35,6 +36,7 @@ private slots:
     void on_actionHough_triggered();
     void on_actionFFTW_Convolution_triggered();
     void on_actionOpen_triggered();
+    void on_actionHistogram_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -45,6 +47,7 @@ private:
     MorfologicalFilter *morfologicalFilter;
     HoughTransform *houghTransform;
     FFTW *fftwConvolution;
+    Histogram *histogram;
     QLabel *outputWindow;
 };
 

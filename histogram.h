@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QtCharts>
 #include <QDebug>
+#include "Pattern/facadeimage.h"
 
 using namespace QtCharts;
 
@@ -11,12 +12,14 @@ namespace Ui {
 class Histogram;
 }
 
-class Histogram: public QWidget {
+class Histogram: public FacadeImage {
     Q_OBJECT
 
 public:
-    explicit Histogram(QWidget *parent = 0);
+    explicit Histogram(FacadeImage *parent = 0);
     ~Histogram();
+
+    virtual void setImage(const QImage &value) override;
 
 private slots:
     void on_cbColor_clicked();

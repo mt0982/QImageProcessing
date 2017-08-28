@@ -1,16 +1,13 @@
 #include "histogram.h"
 #include "ui_histogram.h"
 
-Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram), vec_red(255), vec_green(255), vec_blue(255),
-    isCreated(false)
+Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Histogram),
+    vec_red(255), vec_green(255), vec_blue(255), isCreated(false)
 {
     ui->setupUi(this);
     setWindowTitle("Data Visualisation");
 
     chart = new QChart();
-
-    getImageData();
-    setBarChart();
 
     /* Set Theme Connect */
     connect(ui->cbTheme, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
@@ -117,8 +114,6 @@ void Histogram::getImageData()
     vec_green.fill(0);
     vec_blue.fill(0);
 
-    QImage image("/home/asus/Programy/Qt/Projekty/Project_PoC/Pictures/lena.png");
-
     QRgb *ptr_image = (QRgb*)image.bits();
     for (int i = 0; i < image.width() * image.height(); ++i) {
         vec_red[qRed(ptr_image[i])]++;
@@ -131,6 +126,18 @@ void Histogram::on_cbColor_clicked()
 {
     setBarChart();
 }
+
+void Histogram::setImage(const QImage &value)
+{
+    image = value;
+    getImageData();
+    setBarChart();
+}
+
+
+
+
+
 
 
 

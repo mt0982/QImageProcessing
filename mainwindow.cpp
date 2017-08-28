@@ -66,6 +66,11 @@ void MainWindow::on_actionFFTW_Convolution_triggered()
     fftwConvolution->show();
 }
 
+void MainWindow::on_actionHistogram_triggered()
+{
+    histogram->show();
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this,
@@ -84,12 +89,8 @@ void MainWindow::on_actionOpen_triggered()
         morfologicalFilter->setImage(image);
         houghTransform->setImage(image);
         fftwConvolution->setImage(image);
+        histogram->setImage(image);
     }
-}
-
-void MainWindow::on_actionHistogram_triggered()
-{
-    histogram->show();
 }
 
 

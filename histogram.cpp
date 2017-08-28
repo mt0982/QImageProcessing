@@ -12,7 +12,12 @@ Histogram::Histogram(QWidget *parent) : QWidget(parent), ui(new Ui::Histogram), 
     vec_blue.fill(0);
 
     getImageData();
-    configureBarChart();
+    setBarChart();
+
+    /* Set Theme Connect */
+    connect(ui->cbTheme, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
+        qDebug() << index;
+    });
 
     ui->barChart->setRenderHints(QPainter::Antialiasing);
     ui->barChart->setChart(chart);
@@ -23,7 +28,7 @@ Histogram::~Histogram()
     delete ui;
 }
 
-void Histogram::configureBarChart()
+void Histogram::setBarChart()
 {
     QSplineSeries *series_red = new QSplineSeries();
     QSplineSeries *series_green = new QSplineSeries();

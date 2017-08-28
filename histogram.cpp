@@ -58,16 +58,21 @@ Histogram::~Histogram()
 
 void Histogram::setBarChart()
 {
+    /* Clear Chart Series */
     chart->removeAllSeries();
 
     QSplineSeries *series_red = new QSplineSeries();
     QSplineSeries *series_green = new QSplineSeries();
     QSplineSeries *series_blue = new QSplineSeries();
 
-    series_red->setColor(Qt::red);
-    series_green->setColor(Qt::green);
-    series_blue->setColor(Qt::blue);
+    /* Set Colors: Custom | Standard */
+    if (ui->cbColor->isChecked()) {
+        series_red->setColor(Qt::red);
+        series_green->setColor(Qt::green);
+        series_blue->setColor(Qt::blue);
+    }
 
+    /* Initialize Series */
     for (int value = 0; value < 256; ++value) {
 
         series_red->append(value, vec_red[value]);
@@ -120,6 +125,11 @@ void Histogram::getImageData()
         vec_green[qGreen(ptr_image[i])]++;
         vec_blue[qBlue(ptr_image[i])]++;
     }
+}
+
+void Histogram::on_cbColor_clicked()
+{
+    setBarChart();
 }
 
 

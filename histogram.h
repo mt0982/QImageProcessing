@@ -18,6 +18,9 @@ public:
     explicit Histogram(QWidget *parent = 0);
     ~Histogram();
 
+private slots:
+    void on_cbColor_clicked();
+
 private:
     Ui::Histogram *ui;
 

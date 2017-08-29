@@ -32,6 +32,7 @@ private:
     bool isCreated;
 
     void setBarChart();
+    void setPieChart();
     void getImageData();
 };
 

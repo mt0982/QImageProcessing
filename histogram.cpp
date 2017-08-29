@@ -2,7 +2,7 @@
 #include "ui_histogram.h"
 
 Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Histogram),
-    vec_red(255), vec_green(255), vec_blue(255), isCreated(false)
+    vec_red(256), vec_green(256), vec_blue(256), isCreated(false)
 {
     ui->setupUi(this);
     setWindowTitle("Data Visualisation");
@@ -41,7 +41,15 @@ Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Hist
             break;
         }
 
-        setBarChart();
+        if (ui->cbChartType->currentIndex() == 0) setBarChart();
+        else if (ui->cbChartType->currentIndex() == 1) setPieChart();
+    });
+
+    /* Set Chart Type Connect */
+    connect(ui->cbChartType, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
+
+        //if (index == 0) setBarChart();
+        //else if (index == 1) setPieChart();
     });
 
     ui->chartView->setRenderHints(QPainter::Antialiasing);
@@ -104,12 +112,31 @@ void Histogram::setBarChart()
     isCreated = true;
 }
 
+void Histogram::setPieChart()
+{
+//    /* Clear Chart Series */
+//    chart->removeAllSeries();
+
+//    QPieSeries *series = new QPieSeries();
+//    series->append("Jane", 1);
+//    series->append("Joe", 2);
+//    series->append("Andy", 3);
+//    series->append("Barbara", 4);
+//    series->append("Axel", 5);
+
+//    QPieSlice *slice = series->slices().at(1);
+//    slice->setExploded();
+//    slice->setLabelVisible();
+//    slice->setPen(QPen(Qt::darkGreen, 2));
+//    slice->setBrush(Qt::green);
+
+//    chart->addSeries(series);
+//    //chart->setTitle("Simple piechart example");
+//    //chart->legend()->hide();
+}
+
 void Histogram::getImageData()
 {
-    vec_red.clear();
-    vec_blue.clear();
-    vec_green.clear();
-
     vec_red.fill(0);
     vec_green.fill(0);
     vec_blue.fill(0);

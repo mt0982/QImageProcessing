@@ -85,7 +85,7 @@ void Histogram::setBarChart()
     chartBar->addSeries(series_red);
     chartBar->addSeries(series_green);
     chartBar->addSeries(series_blue);
-    //chart->setTitle("Histogram");
+//    chartBar->setTitle("Histogram");
     chartBar->setAnimationOptions(QChart::SeriesAnimations);
 
     /* Add Axes Only Once */
@@ -113,24 +113,46 @@ void Histogram::setPieChart()
     /* Clear Chart Series */
     if (chartPie->series().size() != 0) chartPie->removeAllSeries();
 
-    int sum;
-    std::accumulate(vec_red.begin(), vec_red.end(), &sum);
-    qDebug() << sum;
+    /* Calculate Sums Of Vectors */
+    double sum_red = 0, sum_green = 0, sum_blue = 0;
 
+    QRgb *ptr_image = (QRgb*)image.bits();
+    for (int i = 0; i < image.width() * image.height(); ++i) {
+        sum_red += qRed(ptr_image[i]);
+        sum_green += qGreen(ptr_image[i]);
+        sum_blue += qBlue(ptr_image[i]);
+    }
+
+    int total = sum_red + sum_green + sum_blue;
+
+    /* Initialize Series */
     QPieSeries *series = new QPieSeries();
-    series->append("Red", 1);
-    series->append("Green", 2);
-    series->append("Blue", 3);
+    series->append("Red(" + QString::number((100 * sum_red) / total, 'g', 2) + "%)", (100 * sum_red) / total);
+    series->append("Green(" + QString::number((100 * sum_green) / total, 'g', 2) + "%)", (100 * sum_green) / total);
+    series->append("Blue(" + QString::number((100 * sum_blue) / total, 'g', 2) + "%)", (100 * sum_blue) / total);
 
-    QPieSlice *slice = series->slices().at(1);
+    /* Configure Slices */
+    QPieSlice *slice = series->slices().at(0);
+    slice->setPen(QPen(Qt::darkRed, 2));
+    slice->setBrush(Qt::red);
+    slice->setExploded();
+    slice->setLabelVisible();
+
+    slice = series->slices().at(1);
     slice->setExploded();
     slice->setLabelVisible();
     slice->setPen(QPen(Qt::darkGreen, 2));
     slice->setBrush(Qt::green);
 
+    slice = series->slices().at(2);
+    slice->setPen(QPen(Qt::darkBlue, 2));
+    slice->setBrush(QBrush(QColor(66, 134, 244)));
+    slice->setExploded();
+    slice->setLabelVisible();
+
     chartPie->addSeries(series);
-//    //chart->setTitle("Simple piechart example");
-//    //chart->legend()->hide();
+//    chartPie->setTitle("Percentage use of colors");
+//    chartPie->legend()->hide();
 }
 
 void Histogram::getImageData()

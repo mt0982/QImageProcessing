@@ -10,33 +10,44 @@ Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Hist
     chartBar = new QChart();
     chartPie = new QChart();
 
+    chartPie->setAnimationOptions(QChart::SeriesAnimations);
+    chartBar->setAnimationOptions(QChart::SeriesAnimations);
+
     /* Set Theme Connect */
     connect(ui->cbTheme, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
 
         switch (index) {
         case 0:
             chartBar->setTheme(QChart::ChartThemeLight);
+            chartPie->setTheme(QChart::ChartThemeLight);
             break;
         case 1:
             chartBar->setTheme(QChart::ChartThemeBlueCerulean);
+            chartPie->setTheme(QChart::ChartThemeBlueCerulean);
             break;
         case 2:
             chartBar->setTheme(QChart::ChartThemeDark);
+            chartPie->setTheme(QChart::ChartThemeDark);
             break;
         case 3:
             chartBar->setTheme(QChart::ChartThemeBrownSand);
+            chartPie->setTheme(QChart::ChartThemeBrownSand);
             break;
         case 4:
             chartBar->setTheme(QChart::ChartThemeBlueNcs);
+            chartPie->setTheme(QChart::ChartThemeBlueNcs);
             break;
         case 5:
             chartBar->setTheme(QChart::ChartThemeHighContrast);
+            chartPie->setTheme(QChart::ChartThemeHighContrast);
             break;
         case 6:
             chartBar->setTheme(QChart::ChartThemeBlueIcy);
+            chartPie->setTheme(QChart::ChartThemeBlueIcy);
             break;
         case 7:
             chartBar->setTheme(QChart::ChartThemeQt);
+            chartPie->setTheme(QChart::ChartThemeQt);
             break;
         default:
             break;
@@ -86,7 +97,6 @@ void Histogram::setBarChart()
     chartBar->addSeries(series_green);
     chartBar->addSeries(series_blue);
 //    chartBar->setTitle("Histogram");
-    chartBar->setAnimationOptions(QChart::SeriesAnimations);
 
     /* Add Axes Only Once */
     if (!isCreated) {
@@ -133,20 +143,26 @@ void Histogram::setPieChart()
 
     /* Configure Slices */
     QPieSlice *slice = series->slices().at(0);
-    slice->setPen(QPen(Qt::darkRed, 2));
-    slice->setBrush(Qt::red);
+    if (ui->cbColor->isChecked()) {
+        slice->setPen(QPen(Qt::darkRed, 1));
+        slice->setBrush(Qt::red);
+    }
     slice->setExploded();
     slice->setLabelVisible();
 
     slice = series->slices().at(1);
     slice->setExploded();
     slice->setLabelVisible();
-    slice->setPen(QPen(Qt::darkGreen, 2));
-    slice->setBrush(Qt::green);
+    if (ui->cbColor->isChecked()) {
+        slice->setPen(QPen(Qt::darkGreen, 1));
+        slice->setBrush(Qt::green);
+    }
 
     slice = series->slices().at(2);
-    slice->setPen(QPen(Qt::darkBlue, 2));
-    slice->setBrush(QBrush(QColor(66, 134, 244)));
+    if (ui->cbColor->isChecked()) {
+        slice->setPen(QPen(Qt::darkBlue, 1));
+        slice->setBrush(QBrush(QColor(66, 134, 244)));
+    }
     slice->setExploded();
     slice->setLabelVisible();
 
@@ -172,6 +188,7 @@ void Histogram::getImageData()
 void Histogram::on_cbColor_clicked()
 {
     setBarChart();
+    setPieChart();
 }
 
 void Histogram::setImage(const QImage &value)

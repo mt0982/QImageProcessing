@@ -28,7 +28,7 @@ private:
     Ui::Histogram *ui;
 
     QVector<int> vec_red, vec_green, vec_blue;
-    QChart *chart;
+    QChart *chartBar, *chartPie;
     bool isCreated;
 
     void setBarChart();

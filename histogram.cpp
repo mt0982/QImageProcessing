@@ -7,53 +7,46 @@ Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Hist
     ui->setupUi(this);
     setWindowTitle("Data Visualisation");
 
-    chart = new QChart();
+    chartBar = new QChart();
+    chartPie = new QChart();
 
     /* Set Theme Connect */
     connect(ui->cbTheme, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
 
         switch (index) {
         case 0:
-            chart->setTheme(QChart::ChartThemeLight);
+            chartBar->setTheme(QChart::ChartThemeLight);
             break;
         case 1:
-            chart->setTheme(QChart::ChartThemeBlueCerulean);
+            chartBar->setTheme(QChart::ChartThemeBlueCerulean);
             break;
         case 2:
-            chart->setTheme(QChart::ChartThemeDark);
+            chartBar->setTheme(QChart::ChartThemeDark);
             break;
         case 3:
-            chart->setTheme(QChart::ChartThemeBrownSand);
+            chartBar->setTheme(QChart::ChartThemeBrownSand);
             break;
         case 4:
-            chart->setTheme(QChart::ChartThemeBlueNcs);
+            chartBar->setTheme(QChart::ChartThemeBlueNcs);
             break;
         case 5:
-            chart->setTheme(QChart::ChartThemeHighContrast);
+            chartBar->setTheme(QChart::ChartThemeHighContrast);
             break;
         case 6:
-            chart->setTheme(QChart::ChartThemeBlueIcy);
+            chartBar->setTheme(QChart::ChartThemeBlueIcy);
             break;
         case 7:
-            chart->setTheme(QChart::ChartThemeQt);
+            chartBar->setTheme(QChart::ChartThemeQt);
             break;
         default:
             break;
         }
-
-        if (ui->cbChartType->currentIndex() == 0) setBarChart();
-        else if (ui->cbChartType->currentIndex() == 1) setPieChart();
     });
 
-    /* Set Chart Type Connect */
-    connect(ui->cbChartType, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int index) {
-
-        //if (index == 0) setBarChart();
-        //else if (index == 1) setPieChart();
-    });
-
-    ui->chartView->setRenderHints(QPainter::Antialiasing);
-    ui->chartView->setChart(chart);
+    ui->chartViewBar->setRenderHints(QPainter::Antialiasing);
+    ui->chartViewPie->setRenderHints(QPainter::Antialiasing);
+    ui->chartViewBar->setChart(chartBar);
+    ui->chartViewPie->setChart(chartPie);
 }
 
 Histogram::~Histogram()
@@ -64,7 +57,7 @@ Histogram::~Histogram()
 void Histogram::setBarChart()
 {
     /* Clear Chart Series */
-    chart->removeAllSeries();
+    if (chartBar->series().size() != 0) chartBar->removeAllSeries();
 
     QSplineSeries *series_red = new QSplineSeries();
     QSplineSeries *series_green = new QSplineSeries();
@@ -86,11 +79,11 @@ void Histogram::setBarChart()
     }
 
     /* Chart */
-    chart->addSeries(series_red);
-    chart->addSeries(series_green);
-    chart->addSeries(series_blue);
+    chartBar->addSeries(series_red);
+    chartBar->addSeries(series_green);
+    chartBar->addSeries(series_blue);
     //chart->setTitle("Histogram");
-    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chartBar->setAnimationOptions(QChart::SeriesAnimations);
 
     /* Add Axes Only Once */
     if (!isCreated) {
@@ -99,38 +92,38 @@ void Histogram::setBarChart()
         QValueAxis *axisY = new QValueAxis;
         QValueAxis *axisX = new QValueAxis;
 
-        chart->addAxis(axisY, Qt::AlignLeft);
-        chart->addAxis(axisX, Qt::AlignBottom);
+        chartBar->addAxis(axisY, Qt::AlignLeft);
+        chartBar->addAxis(axisX, Qt::AlignBottom);
 
         series_red->attachAxis(axisX);
         series_red->attachAxis(axisY);
     }
 
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
+    chartBar->legend()->setVisible(true);
+    chartBar->legend()->setAlignment(Qt::AlignBottom);
 
     isCreated = true;
 }
 
 void Histogram::setPieChart()
 {
-//    /* Clear Chart Series */
-//    chart->removeAllSeries();
+    /* Clear Chart Series */
+    if (chartPie->series().size() != 0) chartPie->removeAllSeries();
 
-//    QPieSeries *series = new QPieSeries();
-//    series->append("Jane", 1);
-//    series->append("Joe", 2);
-//    series->append("Andy", 3);
-//    series->append("Barbara", 4);
-//    series->append("Axel", 5);
+    QPieSeries *series = new QPieSeries();
+    series->append("Jane", 1);
+    series->append("Joe", 2);
+    series->append("Andy", 3);
+    series->append("Barbara", 4);
+    series->append("Axel", 5);
 
-//    QPieSlice *slice = series->slices().at(1);
-//    slice->setExploded();
-//    slice->setLabelVisible();
-//    slice->setPen(QPen(Qt::darkGreen, 2));
-//    slice->setBrush(Qt::green);
+    QPieSlice *slice = series->slices().at(1);
+    slice->setExploded();
+    slice->setLabelVisible();
+    slice->setPen(QPen(Qt::darkGreen, 2));
+    slice->setBrush(Qt::green);
 
-//    chart->addSeries(series);
+    chartPie->addSeries(series);
 //    //chart->setTitle("Simple piechart example");
 //    //chart->legend()->hide();
 }
@@ -159,6 +152,7 @@ void Histogram::setImage(const QImage &value)
     image = value;
     getImageData();
     setBarChart();
+    setPieChart();
 }
 
 

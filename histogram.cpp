@@ -41,6 +41,9 @@ Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Hist
         default:
             break;
         }
+
+        setBarChart();
+        setPieChart();
     });
 
     ui->chartViewBar->setRenderHints(QPainter::Antialiasing);
@@ -110,12 +113,14 @@ void Histogram::setPieChart()
     /* Clear Chart Series */
     if (chartPie->series().size() != 0) chartPie->removeAllSeries();
 
+    int sum;
+    std::accumulate(vec_red.begin(), vec_red.end(), &sum);
+    qDebug() << sum;
+
     QPieSeries *series = new QPieSeries();
-    series->append("Jane", 1);
-    series->append("Joe", 2);
-    series->append("Andy", 3);
-    series->append("Barbara", 4);
-    series->append("Axel", 5);
+    series->append("Red", 1);
+    series->append("Green", 2);
+    series->append("Blue", 3);
 
     QPieSlice *slice = series->slices().at(1);
     slice->setExploded();

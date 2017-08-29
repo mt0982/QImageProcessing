@@ -30,7 +30,7 @@
     <number>2</number>
    </property>
    <item row="1" column="0">
-    <widget class="QChartView" name="barChart" native="true">
+    <widget class="QChartView" name="chartView" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>

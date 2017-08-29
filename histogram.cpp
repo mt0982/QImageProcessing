@@ -44,8 +44,8 @@ Histogram::Histogram(FacadeImage *parent) : FacadeImage(parent), ui(new Ui::Hist
         setBarChart();
     });
 
-    ui->barChart->setRenderHints(QPainter::Antialiasing);
-    ui->barChart->setChart(chart);
+    ui->chartView->setRenderHints(QPainter::Antialiasing);
+    ui->chartView->setChart(chart);
 }
 
 Histogram::~Histogram()
